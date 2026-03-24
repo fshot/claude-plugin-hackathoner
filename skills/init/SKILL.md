@@ -337,10 +337,35 @@ Create the project-level Claude instructions file:
 ```markdown
 # {{EVENT_NAME}} — Project Instructions
 
-## Project Context
+## Project Overview
 
 This is a hackathon project for **{{EVENT_NAME}}** ({{DATES}}).
 Hackathon duration: {{DURATION}} hours.
+Challenge track: {{CHALLENGE_TRACK}}
+Team members: {{TEAM_MEMBERS_LIST}}
+
+## Commands
+
+- `/hack` — Pick up your next task. Detects your identity, finds your highest-priority unblocked issue, ensures there's an approved plan, then executes it in a worktree.
+- `/checkpoint` — Review progress against the timeline. Shows status dashboard, identifies risks, suggests scope cuts.
+
+## Project Skills
+
+These skills are loaded automatically and provide context about the hackathon:
+- `hackathon-rules` — Parsed rules, scoring rubric, timeline, submission requirements
+- `team-routing` — Team roster and task assignment heuristics
+- `hackathon-sdlc` — Spec-driven development process for this hackathon
+{{SPONSOR_TOOL_SKILLS}}
+
+## Workflow
+
+1. Run `/hack` to get your next assigned issue
+2. A plan will be generated (or loaded) from docs/plans/
+3. Implementation happens in a worktree branched from main
+4. Follow TDD: write tests first, then implement
+5. Create a PR when done — reference the plan file
+6. Run `/hack` again for your next issue
+7. Run `/checkpoint` periodically to check team progress
 
 ## Tech Stack
 
@@ -348,17 +373,20 @@ Hackathon duration: {{DURATION}} hours.
 - Package manager: pnpm
 - Language: TypeScript (strict)
 - Frontend: Next.js on Vercel, Tailwind CSS, shadcn/ui
+- UI components: shadcn/ui
 - IaC: Terraform
 - Local cloud: LocalStack for AWS services
 - Testing: Vitest (unit), Playwright (E2E)
 - State: GitHub Issues + Projects
 
-## Development Process
+## Important Rules
 
-- **Spec-driven:** No code without an approved plan in `docs/plans/`.
+- **Plans before code.** No code without an approved plan in `docs/plans/`.
+- **P0 before P1 before P2.** Always work on the highest-priority unblocked issue.
+- **No new features after C5.** Final checkpoint is for polish, bug fixes, and submission only.
+- **Commit frequently** with descriptive messages. Small, focused commits.
 - **Plan format:** `docs/plans/YYYY-MM-DD-HHMM-<description>.md`
 - **Branching:** Worktrees from main. PR back to main.
-- **Priorities:** P0 > P1 > P2 > P-lagniappe. P0 must be done before C4.
 - **Tracking issue:** #1 is the single source of truth.
 
 ## Credentials
@@ -388,12 +416,28 @@ Set `USE_MOCKS=true` for local development without real API keys.
 - Verification before completion: test the feature manually, check for edge cases.
 ```
 
-Replace all placeholders with actual values from the parsed rules.
+Replace all placeholders with actual values from the parsed rules. For `{{SPONSOR_TOOL_SKILLS}}`, generate one line per researched sponsor tool in the format `- \`<tool-name>\` — Integration guide for <tool display name>`. For `{{TEAM_MEMBERS_LIST}}`, use a comma-separated list of team member names.
 
 ### 4.2 Generate CONTRIBUTING.md
 
 ```markdown
 # Contributing to {{EVENT_NAME}}
+
+> **You do NOT need any special Claude Code plugins installed** — all commands and skills are included in this repo's `.claude/` directory.
+
+## Getting Started
+
+Clone the repo, run `claude` in the project root, then type `/hack` to pick up your first task.
+
+```bash
+gh repo clone {{OWNER}}/{{REPO_NAME}}
+cd {{REPO_NAME}}
+pnpm install
+cp .env.example .env
+# Fill in credential values — see "Credential Setup" below
+claude
+# Then type: /hack
+```
 
 ## Prerequisites
 
@@ -403,37 +447,6 @@ Replace all placeholders with actual values from the parsed rules.
 - [ ] Terraform 1.5+ (if using IaC)
 - [ ] Docker (for LocalStack)
 - [ ] Claude Code CLI
-
-## Getting Started
-
-1. Clone the repo:
-   ```bash
-   gh repo clone {{OWNER}}/{{REPO_NAME}}
-   cd {{REPO_NAME}}
-   ```
-
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-
-3. Set up credentials:
-   ```bash
-   cp .env.example .env
-   # Fill in your credential values — see sections below
-   ```
-
-4. Verify your setup:
-   ```bash
-   source .env
-   gh api user --jq '.login'
-   # Verify each tool credential as described below
-   ```
-
-5. Start developing:
-   ```bash
-   pnpm dev
-   ```
 
 ## Workflow
 
