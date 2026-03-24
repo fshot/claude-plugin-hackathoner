@@ -1,16 +1,18 @@
 ---
-description: Single entry point for hackathon execution — routes to the right phase automatically
-argument-hint: "[phase] [args] — e.g., research <tool>, team, storm, scaffold, checkpoint, data, demo"
+description: "Organizer command for hackathon setup — routes through prep phases (init, research, team, storm, scaffold, data, demo)"
+argument-hint: "[phase] [args] — e.g., research <tool>, team, storm, scaffold, data, demo"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, AskUserQuestion, WebFetch, WebSearch, TaskCreate, TaskUpdate, TaskList
 ---
 
-# /hack — Hackathon Execution Router
+> **Note:** This is the organizer's setup command. Contributors use `/hack` (generated in the project repo) to pick up work items.
 
-You are the hackathon execution engine. Parse the arguments, determine the correct phase, and route to the appropriate skill. Always announce what you are doing before invoking a skill.
+# /hackprep — Hackathon Prep Router
+
+You are the hackathon prep engine. Parse the arguments, determine the correct phase, and route to the appropriate skill. Always announce what you are doing before invoking a skill.
 
 ## Step 1: Parse Arguments
 
-The user invoked `/hack $ARGUMENTS`.
+The user invoked `/hackprep $ARGUMENTS`.
 
 Set `ARGS` = `$ARGUMENTS` (trimmed).
 
@@ -36,7 +38,7 @@ Match the first word of `ARGS` against the table below and invoke the correspond
 If the first word does not match any known phase, tell the user:
 
 > Unknown phase: `<word>`. Available phases: research, team, storm, scaffold, checkpoint, data, demo.
-> Run `/hack` with no arguments to auto-detect the next action.
+> Run `/hackprep` with no arguments to auto-detect the next action.
 
 Then stop.
 
@@ -96,41 +98,11 @@ Scan the checklist top-to-bottom. Find the **first incomplete item**.
 
 Never skip phases. If an earlier phase is incomplete, do that one first even if a later phase seems more urgent.
 
-**If all prep phases are complete and work items exist:**
+**If all prep phases are complete:**
 
-1. Detect the current user:
-   - Run `git config user.email` to get the email
-   - Run `gh api user --jq .login` to get the GitHub username
-2. List open issues assigned to this user, sorted by priority:
-   - Run `gh issue list --assignee <username> --state open --json number,title,labels`
-3. Apply priority ordering: P0 before P1 before P2. P-lagniappe only if the latest checkpoint review says C4 is green.
-4. Among same-priority issues, pick the one with the lowest issue number (oldest first).
-5. Filter out blocked issues (any issue with a `blocked` label).
-6. If no issues are assigned to the current user, look for unassigned issues and suggest assignment.
+Announce: "All prep phases complete. Contributors can now use `/hack` to start building."
 
-Once a target issue is selected:
-
-7. Check if a plan exists for this issue:
-   - Search `docs/plans/` for a file whose frontmatter references this issue number
-   - Or check for a comment on the issue linking to a plan file
-8. **If no plan exists:**
-   - Announce: "Issue #N needs a plan before implementation."
-   - Generate a plan file at `docs/plans/YYYY-MM-DD-HHMM-<description>.md` with frontmatter linking to the issue, assignee, and target checkpoint.
-   - Commit the plan to main.
-   - Tell the user the plan is ready for review. Stop and wait for approval.
-9. **If a plan exists and is approved (merged to main):**
-   - Announce: "Executing plan for issue #N: <title>"
-   - Create a worktree for the issue branch
-   - Execute the plan: implement, test, verify
-   - Create a PR referencing the plan file
-   - Announce completion and move to next issue
-
-**If all issues are closed:**
-
-1. Check the checkpoint timeline in the tracking issue.
-2. If the current checkpoint suggests demo prep: invoke skill `hackathoner:demo-prep`.
-3. If there is still time and C4 is green: suggest P-lagniappe items or polish work.
-4. Otherwise: announce "All work items complete!" and suggest running `/hack checkpoint` to review status.
+Then stop.
 
 ---
 
@@ -139,9 +111,5 @@ Once a target issue is selected:
 These rules are non-negotiable. Follow them at all times.
 
 1. **Never skip phases.** The checklist is sequential. Complete earlier phases before later ones.
-2. **Plans before code.** Every work item needs a plan committed to `docs/plans/` before implementation begins. No exceptions.
-3. **Timestamp plans.** Plan files are named `docs/plans/YYYY-MM-DD-HHMM-<description>.md` using the current time.
-4. **Priority discipline.** P0 before P1 before P2. P-lagniappe only if the latest checkpoint says C4 is green.
-5. **Always announce.** Before invoking any skill, tell the user which phase/skill you are about to run and why.
-6. **One owner per issue.** Issues are assigned to exactly one person. Respect assignments.
-7. **Checkpoint enforcement.** If a checkpoint is overdue, route to `hackathoner:checkpoint` before continuing build work.
+2. **Always announce.** Before invoking any skill, tell the user which phase/skill you are about to run and why.
+3. **Prep only.** This command handles prep phases (init through scaffold). Contributors use `/hack` for work items.

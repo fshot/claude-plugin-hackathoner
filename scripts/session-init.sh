@@ -19,14 +19,14 @@ if [ -f ".claude/CLAUDE.md" ] && grep -q "hackathon" ".claude/CLAUDE.md" 2>/dev/
       if [ -n "$ISSUE_BODY" ]; then
         CONTEXT="${CONTEXT}\n\nTracking Issue #1:\n${ISSUE_BODY}"
       else
-        CONTEXT="${CONTEXT}\n\nNo tracking issue #1 found. Run /hack to initialize."
+        CONTEXT="${CONTEXT}\n\nNo tracking issue #1 found. Run /hackprep to initialize (organizer setup). Contributors use /hack in the project repo."
       fi
     fi
   else
     CONTEXT="${CONTEXT}\n\ngh CLI not available or not authenticated. Some features require gh."
   fi
 else
-  CONTEXT="No hackathon project detected in current directory. Run /hack in a hackathon project to get started."
+  CONTEXT="No hackathon project detected in current directory. Run /hackprep to set up a hackathon (organizer), or /hack in a project repo to start building (contributor)."
 fi
 
 # Escape for JSON output
