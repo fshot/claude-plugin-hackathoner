@@ -1,0 +1,18 @@
+{
+  "name": "hackathoner-dev",
+  "description": "Development marketplace for hackathoner plugin",
+  "owner": {
+    "name": "Frank Shotwell"
+  },
+  "plugins": [
+    {
+      "name": "hackathoner",
+      "description": "Structured hackathon execution: research, scaffold, checkpoint, team routing, demo prep",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "Frank Shotwell"
+      }
+    }
+  ]
+}

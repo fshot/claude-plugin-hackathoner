@@ -8,5 +8,9 @@
   },
   "repository": "https://github.com/fshot/claude-plugin-hackathoner",
   "license": "MIT",
-  "keywords": ["hackathon", "scaffolding", "team-routing", "checkpoints", "demo-prep"]
+  "keywords": ["hackathon", "scaffolding", "team-routing", "checkpoints", "demo-prep"],
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "commands": "./commands/",
+  "hooks": "./hooks/hooks.json"
 }
