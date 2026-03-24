@@ -556,6 +556,8 @@ test-results/
 
 ```bash
 mkdir -p .claude/skills
+mkdir -p .claude/commands
+mkdir -p .claude/agents
 mkdir -p docs/plans
 mkdir -p docs/tools
 mkdir -p infra
@@ -744,7 +746,385 @@ Fill in any project-specific values.
 
 ---
 
-## Phase 5: Initial Commit
+## Phase 5: Contributor Commands & Agents
+
+Generate project-level commands and agents so that contributors can use `/hack` and `/checkpoint` without needing the hackathoner plugin installed.
+
+### 5.1 Create `.claude/commands/hack.md`
+
+```bash
+mkdir -p .claude/commands .claude/agents
+```
+
+Write the following file to `.claude/commands/hack.md`:
+
+````markdown
+---
+description: Pick up your next hackathon task — detects your identity, finds your highest-priority issue, checks for a plan, and executes
+argument-hint: "[issue-number] — optionally specify an issue to work on"
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, AskUserQuestion, WebFetch, WebSearch, TaskCreate, TaskUpdate, TaskList
+---
+
+# /hack — Contributor Workflow
+
+You are a hackathon contributor. Follow this workflow to pick up and execute your next task.
+
+## Rules
+
+- **Plans before code** — every issue needs a committed plan in `docs/plans/` before any implementation begins.
+- **P0 before P1 before P2** — strict priority ordering. Never start a lower-priority issue while a higher one is unblocked and assigned to you.
+- **One owner per issue** — do not take work already assigned to someone else.
+- **Commit frequently** — small, incremental commits. Do not accumulate large uncommitted changes.
+- **Reference the hackathon-sdlc project skill** for plan format, branching strategy, and quality gates.
+
+## Step 1: Identify Yourself
+
+```bash
+MY_EMAIL=$(git config user.email)
+echo "Current user: $MY_EMAIL"
+```
+
+Read tracking issue #1 to find the Team Roster table. Match your email or GitHub username to determine your identity and role.
+
+## Step 2: Pick an Issue
+
+If `$ARGUMENTS` contains an issue number, use that issue:
+
+```bash
+gh issue view $ARGUMENTS --json number,title,assignees,labels,body
+```
+
+Otherwise, find your highest-priority unblocked issue:
+
+```bash
+# Try P0 first, then P1, then P2
+gh issue list --assignee @me --state open --label P0 --json number,title,labels
+gh issue list --assignee @me --state open --label P1 --json number,title,labels
+gh issue list --assignee @me --state open --label P2 --json number,title,labels
+```
+
+Pick the first issue from the highest available priority level. If no issues are assigned to you, report that and ask what to pick up.
+
+## Step 3: Check for an Approved Plan
+
+Look for a plan file referencing this issue:
+
+```bash
+grep -rl "issue.*#ISSUE_NUMBER" docs/plans/ 2>/dev/null
+```
+
+Also list recent plan files to check manually:
+
+```bash
+ls -la docs/plans/
+```
+
+### If no plan exists:
+
+1. Use the hackathon-sdlc skill's plan template to generate a plan.
+2. Save it to `docs/plans/YYYY-MM-DD-HHMM-<description>.md` using the current timestamp.
+3. Commit the plan to main:
+   ```bash
+   git add docs/plans/
+   git commit -m "docs(plan): plan for #ISSUE_NUMBER — DESCRIPTION"
+   git push
+   ```
+4. Present the plan to the user and ask for approval before proceeding.
+
+### If a plan exists:
+
+Read the plan file and proceed to implementation.
+
+## Step 4: Implement
+
+1. Create a worktree from main:
+   ```bash
+   git worktree add ../REPO-ISSUE_NUMBER -b feat/ISSUE_NUMBER-SLUG
+   ```
+2. Work in the worktree. Follow the plan step by step.
+3. Commit frequently with messages referencing the issue number.
+4. Run quality gates: lint, type-check, tests.
+
+## Step 5: Create PR
+
+```bash
+cd ../REPO-ISSUE_NUMBER
+gh pr create --title "feat: DESCRIPTION (#ISSUE_NUMBER)" \
+  --body "## Plan\n\nSee \`docs/plans/PLAN_FILENAME\`\n\nCloses #ISSUE_NUMBER"
+```
+
+## Step 6: Loop
+
+After the PR is created, tell the user:
+
+> PR created. Run `/hack` to pick up your next issue.
+````
+
+### 5.2 Create `.claude/commands/checkpoint.md`
+
+Write the following file to `.claude/commands/checkpoint.md`:
+
+````markdown
+---
+description: Check hackathon progress against the timeline — shows status dashboard, identifies risks, suggests scope cuts
+allowed-tools: Read, Bash, Glob, Grep, AskUserQuestion
+---
+
+# /checkpoint — Progress Review
+
+You are reviewing hackathon progress against the checkpoint timeline.
+
+## Step 1: Read Tracking State
+
+```bash
+gh issue view 1 --json body --jq '.body'
+```
+
+Parse the tracking issue to extract:
+- **Checkpoint Timeline** table (C0-C7 with target times)
+- **Hacking start time** (C0 target time)
+- **Phase Checklist** status
+
+## Step 2: Compute Current Checkpoint
+
+Determine the current time and compute elapsed hours since hacking started:
+
+```bash
+echo "Current time: $(date -u '+%Y-%m-%d %H:%M UTC')"
+```
+
+Compare elapsed time against the checkpoint timeline offsets to determine which checkpoint window you are in.
+
+## Step 3: Check Issue Status
+
+```bash
+echo "=== P0 Issues ==="
+gh issue list --state open --label P0 --json number,title,assignees
+
+echo "=== P1 Issues ==="
+gh issue list --state open --label P1 --json number,title,assignees
+
+echo "=== P2 Issues ==="
+gh issue list --state open --label P2 --json number,title,assignees
+
+echo "=== Closed Issues ==="
+gh issue list --state closed --json number,title,labels
+```
+
+## Step 4: Check PR Status
+
+```bash
+gh pr list --state open --json number,title,author,reviewDecision
+gh pr list --state merged --json number,title
+```
+
+## Step 5: Status Dashboard
+
+Present a dashboard using this format:
+
+```
+╔══════════════════════════════════════════════════════╗
+║              HACKATHON STATUS — Checkpoint Cx        ║
+╠══════════════════════════════════════════════════════╣
+║ Elapsed:  Xh XXm / {{DURATION}}h total              ║
+║ Remaining: Xh XXm                                    ║
+╠══════════════════════════════════════════════════════╣
+║ P0 Issues:  X open / Y total     [GREEN/YELLOW/RED] ║
+║ P1 Issues:  X open / Y total     [GREEN/YELLOW/RED] ║
+║ P2 Issues:  X open / Y total     [GREEN/YELLOW/RED] ║
+║ Open PRs:   X                    [GREEN/YELLOW/RED] ║
+╠══════════════════════════════════════════════════════╣
+║ Overall:    [GREEN/YELLOW/RED]                       ║
+╚══════════════════════════════════════════════════════╝
+```
+
+Color rules:
+- **GREEN**: On track. P0s done or in progress with time remaining.
+- **YELLOW**: At risk. P0s behind schedule but recoverable with scope cuts.
+- **RED**: Behind. P0s blocked or insufficient time to complete.
+
+## Step 6: Scope Cut Recommendations (if behind)
+
+If status is YELLOW or RED, suggest scope cuts following this protocol:
+
+1. **Cut P-lagniappe first** — remove any nice-to-have items
+2. **Cut P2 next** — close or deprioritize polish items
+3. **Reduce P1 scope** — simplify P1 items to minimum viable versions
+4. **Simplify P0 scope** — only as last resort, reduce P0 to bare minimum for demo
+
+For each cut, explain what is lost and what is saved in time.
+
+## Step 7: Update Tracking Issue
+
+Add a checkpoint comment to the tracking issue:
+
+```bash
+gh issue comment 1 --body "## Checkpoint Cx — STATUS
+
+**Elapsed:** Xh XXm
+**P0:** X/Y complete
+**P1:** X/Y complete
+**P2:** X/Y complete
+**Open PRs:** X
+
+**Risks:** (list any)
+**Scope cuts:** (list any decisions made)
+
+**Next checkpoint:** Cx+1 at TIME"
+```
+````
+
+### 5.3 Create `.claude/agents/tool-researcher.md`
+
+Write the following file to `.claude/agents/tool-researcher.md` — copy the exact content from the plugin's agent definition:
+
+```markdown
+---
+name: tool-researcher
+description: |
+  Use this agent when deep-diving into a sponsor tool's API, SDKs, IaC, and Claude ecosystem integrations. Produces a structured research report.
+
+  <example>
+  Context: User needs to research a hackathon sponsor tool
+  user: "/hack research pinecone"
+  assistant: "I'll spawn the tool-researcher agent to deep-dive into Pinecone's API, SDKs, and integrations."
+  <commentary>The research-tool skill dispatches this agent for each sponsor tool.</commentary>
+  </example>
+
+  <example>
+  Context: Researching AWS Bedrock for the hackathon
+  user: "We need to use AWS Bedrock — research it"
+  assistant: "I'll use the tool-researcher agent to investigate Bedrock's API surface, IaC, and Claude ecosystem."
+  <commentary>Any sponsor tool research triggers this agent.</commentary>
+  </example>
+model: sonnet
+tools: ["Read", "Write", "Bash", "Glob", "Grep", "WebFetch", "WebSearch"]
+---
+
+# Tool Researcher Agent
+
+You are a hackathon tool researcher. Your job is to produce a comprehensive, actionable research report on a sponsor tool so the team can integrate it quickly under extreme time pressure.
+
+## Context
+
+You will receive a tool name and hackathon constraints. Your output is a structured research report that feeds into skill generation, README creation, and Terraform scaffolding.
+
+## Research Dimensions
+
+Investigate each of the following six dimensions. For each dimension, note what you confirmed, what you could not verify, and any blockers.
+
+### 1. API Surface
+
+- **Endpoints**: List the core REST/GraphQL/gRPC endpoints the team will actually use. Focus on CRUD operations relevant to hackathon scope — skip admin/billing endpoints.
+- **SDKs**: Official SDKs and their languages. Note which SDK is most mature. Check npm, PyPI, and Go modules.
+- **Authentication**: Auth method (API key, OAuth2, JWT, service account). How to obtain credentials. Whether there is a free tier or hackathon-specific access.
+- **Rate Limits**: Documented rate limits. Whether the free tier is sufficient for demo-scale usage.
+- **Gotchas**: Breaking changes in recent versions, deprecated endpoints, known bugs, surprising behavior. Check GitHub issues and changelogs.
+
+### 2. Onboarding
+
+- **Signup Flow**: Steps from zero to working API key. Note any approval gates, waitlists, or identity verification.
+- **Time to Access**: Realistic estimate of how long it takes to get credentials and make a first successful API call.
+- **Free Tier / Hackathon Credits**: Limits on the free tier. Whether hackathon-specific credits or elevated limits are available.
+- **Team Access**: Can one account be shared, or does each team member need their own?
+
+### 3. Infrastructure as Code (IaC)
+
+- **Terraform Provider**: Does an official or community Terraform provider exist? Link to the registry page.
+- **Key Resources**: List the Terraform resource types needed for a minimal integration (e.g., `pinecone_index`, `aws_bedrock_model`).
+- **Example Config**: Sketch a minimal `main.tf` that provisions the resource. Include required variables.
+- **State Considerations**: Any resources that are slow to create/destroy or have eventual consistency issues.
+
+### 4. Claude Ecosystem
+
+- **MCP Servers**: Search for Model Context Protocol servers that wrap this tool. Check the MCP server registry, GitHub, and npm.
+- **Community Skills**: Any existing Claude Code skills or plugins for this tool.
+- **Claude Tutorials**: Official or community tutorials showing Claude + this tool.
+- **Prompt Patterns**: Known effective prompt patterns for using Claude with this tool's data or API.
+
+### 5. CLI Tools
+
+- **Official CLI**: Does the tool have a CLI? How to install it. Key commands for hackathon use.
+- **OpenAPI Spec**: Is there a published OpenAPI/Swagger spec? Link to it. This is gold for generating typed clients.
+- **Code Generation**: Can we generate a TypeScript client from the spec?
+
+### 6. Integration Shortcuts
+
+- **Pre-built Connectors**: Zapier, Make, n8n, or other integration platform connectors.
+- **Example Apps**: Official quickstart repos, sample apps, or hackathon starter kits.
+- **Community Projects**: Notable open-source projects integrating this tool that we can reference.
+- **Starter Templates**: Any official or community templates (Next.js, Express, etc.) with this tool pre-configured.
+
+## Output Format
+
+Structure your report exactly as follows:
+
+\```markdown
+# Research Report: <Tool Name>
+
+## TL;DR
+<2-3 sentences: what this tool does, whether it's hackathon-friendly, and the fastest path to integration.>
+
+## 1. API Surface
+<findings>
+
+## 2. Onboarding
+<findings>
+
+## 3. Infrastructure as Code
+<findings>
+
+## 4. Claude Ecosystem
+<findings>
+
+## 5. CLI Tools
+<findings>
+
+## 6. Integration Shortcuts
+<findings>
+
+## Hackathon Quick Start
+<Numbered steps from zero to working integration. Be specific: exact commands, exact URLs, exact config.>
+
+## Red Flags
+<Anything that could block or slow the team. Be blunt.>
+
+## Recommended Approach
+<Your opinionated recommendation for the fastest, most reliable integration path given hackathon constraints.>
+\```
+
+## Research Strategy
+
+1. Start with the tool's official documentation site. Use WebSearch to find it.
+2. Check the tool's GitHub org for SDKs, examples, and OpenAPI specs.
+3. Search the Terraform Registry for providers.
+4. Search npm and GitHub for MCP servers.
+5. Check the tool's status page or Twitter for ongoing incidents.
+6. If information is conflicting or unclear, note the uncertainty explicitly rather than guessing.
+
+## Constraints
+
+- Optimize for hackathon speed. A working integration in 2 hours beats a perfect architecture in 2 days.
+- Prefer official SDKs over raw HTTP calls.
+- Prefer managed services over self-hosted.
+- If Terraform support is weak or nonexistent, say so — the team can provision manually.
+- Always verify that free-tier limits are sufficient for a demo. If not, flag it immediately.
+```
+
+### 5.4 Update Directory Creation
+
+Add to the `mkdir` commands in Phase 4.4 (if not already present):
+
+```bash
+mkdir -p .claude/commands
+mkdir -p .claude/agents
+```
+
+These directories were already created in 5.1, but confirming them in Phase 4.4 ensures they exist even if Phase 5 is run independently.
+
+---
+
+## Phase 6: Initial Commit
 
 Stage all generated files and create the initial commit:
 
@@ -756,6 +1136,8 @@ git commit -m "feat: initialize hackathon project — {{EVENT_NAME}}
 - CONTRIBUTING.md with setup instructions
 - .claude/CLAUDE.md with project context
 - .claude/skills/hackathon-rules and hackathon-sdlc
+- .claude/commands/hack and checkpoint for contributors
+- .claude/agents/tool-researcher for sponsor tool research
 - .env.example with required credentials
 - Directory structure for docs, infra, tests, src"
 
@@ -770,9 +1152,9 @@ git push --set-upstream origin main
 
 ---
 
-## Phase 6: Update Tracking Issue
+## Phase 7: Update Tracking Issue
 
-### 6.1 Check Off Init Complete
+### 7.1 Check Off Init Complete
 
 Edit the tracking issue body to check off "Init complete":
 
@@ -787,7 +1169,7 @@ UPDATED_BODY=$(echo "$BODY" | sed 's/- \[ \] Init complete/- [x] Init complete/'
 gh issue edit 1 --body "$UPDATED_BODY"
 ```
 
-### 6.2 Add Completion Comment
+### 7.2 Add Completion Comment
 
 ```bash
 gh issue comment 1 --body "## ✅ Init Complete
@@ -799,6 +1181,9 @@ gh issue comment 1 --body "## ✅ Init Complete
 - \`.claude/CLAUDE.md\` — project instructions
 - \`.claude/skills/hackathon-rules/SKILL.md\` — parsed rules reference
 - \`.claude/skills/hackathon-sdlc/SKILL.md\` — development process
+- \`.claude/commands/hack.md\` — contributor workflow command
+- \`.claude/commands/checkpoint.md\` — progress review command
+- \`.claude/agents/tool-researcher.md\` — sponsor tool research agent
 - \`CONTRIBUTING.md\` — team onboarding
 - \`.env.example\` — credential template
 - \`.gitignore\`
@@ -826,6 +1211,9 @@ Present a summary to the user:
 > - `.claude/CLAUDE.md`
 > - `.claude/skills/hackathon-rules/SKILL.md`
 > - `.claude/skills/hackathon-sdlc/SKILL.md`
+> - `.claude/commands/hack.md`
+> - `.claude/commands/checkpoint.md`
+> - `.claude/agents/tool-researcher.md`
 > - `CONTRIBUTING.md`
 > - `.env.example`
 > - `.gitignore`
@@ -833,9 +1221,12 @@ Present a summary to the user:
 > **Directories created:**
 > - `docs/plans/`, `docs/tools/`, `infra/`, `src/`
 > - `test/e2e/`, `test/fixtures/expected-violations/`
-> - `.claude/skills/`
+> - `.claude/skills/`, `.claude/commands/`, `.claude/agents/`
 >
 > **Outstanding credential setup:**
 > {{LIST_ANY_UNVERIFIED_CREDENTIALS}}
+>
+> Contributors can clone this repo and use `/hack` to pick up work items — no plugin needed.
+> Available project commands: `/hack` (pick next issue), `/checkpoint` (progress review)
 >
 > **Next step:** Run `/hack` to continue to the next phase.
