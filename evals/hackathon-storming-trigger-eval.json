@@ -1,0 +1,22 @@
+[
+  {"query": "let's brainstorm what to build for the hackathon", "should_trigger": true},
+  {"query": "time to plan our hackathon project — features, priorities, architecture", "should_trigger": true},
+  {"query": "we need to figure out what to build and who does what", "should_trigger": true},
+  {"query": "run a hackathon storming session to generate our backlog", "should_trigger": true},
+  {"query": "help us ideate and create work items for the hackathon", "should_trigger": true},
+  {"query": "let's plan the project — calibrate scoring, brainstorm features, create issues", "should_trigger": true},
+  {"query": "we need to prioritize features for the hackathon and assign them", "should_trigger": true},
+  {"query": "what should we build? let's storm through ideas and make a plan", "should_trigger": true},
+  {"query": "generate hackathon work items based on the scoring rubric", "should_trigger": true},
+  {"query": "kick off the brainstorming phase — concept, architecture, demo strategy", "should_trigger": true},
+  {"query": "brainstorm names for our startup", "should_trigger": false},
+  {"query": "help me think of a good variable name", "should_trigger": false},
+  {"query": "what's a creative way to handle error messages?", "should_trigger": false},
+  {"query": "initialize the hackathon project", "should_trigger": false},
+  {"query": "research the Supabase API for our project", "should_trigger": false},
+  {"query": "run a checkpoint to see our progress", "should_trigger": false},
+  {"query": "scaffold the Next.js app structure", "should_trigger": false},
+  {"query": "plan the database schema for our app", "should_trigger": false},
+  {"query": "what features should a todo app have?", "should_trigger": false},
+  {"query": "help me write a project proposal for class", "should_trigger": false}
+]

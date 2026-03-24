@@ -1,0 +1,15 @@
+This skill should be used when the user asks to "set up a hackathon", "start a hackathon project", "initialize hackathon", "kick off the hack", "parse hackathon rules", "create hackathon repo", mentions Devpost rules, or wants to prepare for an upcoming hackathon event. Sets up GitHub repo, tracking issue, project board, credentials, CLAUDE.md, and CONTRIBUTING.md from parsed hackathon rules. DO NOT use for general project setup, React/Next.js scaffolding, or non-hackathon repositories.
+
+---
+Eval results (best iteration, 10/20 = 50%):
+- Baseline: 10/20 (50%) — 0% recall, 100% precision
+- Iteration 1 (intent-focused): 10/20 (50%) — slight recall improvement (5 queries hit 1/3)
+- Iteration 2 (plugin-dev style): 10/20 (50%) — 4 queries hit 1/3
+
+NOTE: Low recall is a systemic issue caused by ~50 competing skills in the user's environment
+(superpowers, plugin-dev, hookify, etc.) that intercept generic queries. The description
+optimizations improved partial trigger rates (from 0/3 to 1/3 on several queries) but
+couldn't consistently reach the 2/3 threshold needed to pass.
+
+Recommendation: These skills work best when invoked via slash commands (/hack init) rather
+than natural language triggering, given the high skill density in this user's environment.

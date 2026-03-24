@@ -1,0 +1,22 @@
+[
+  {"query": "how are we doing on time? let's check our progress", "should_trigger": true},
+  {"query": "run a checkpoint review", "should_trigger": true},
+  {"query": "are we on track for the hackathon deadline?", "should_trigger": true},
+  {"query": "we're 8 hours in, should we cut scope?", "should_trigger": true},
+  {"query": "status check — where do we stand against the timeline?", "should_trigger": true},
+  {"query": "do a progress review and tell me if we need to cut anything", "should_trigger": true},
+  {"query": "it's been 3 hours since hacking started, time for a checkpoint", "should_trigger": true},
+  {"query": "are we behind schedule? check our P0 status", "should_trigger": true},
+  {"query": "hackathon progress report — what's done and what's at risk?", "should_trigger": true},
+  {"query": "let's do a scope review, I'm worried we're falling behind", "should_trigger": true},
+  {"query": "what time is it?", "should_trigger": false},
+  {"query": "create a new feature issue for the dashboard", "should_trigger": false},
+  {"query": "help me debug this API call", "should_trigger": false},
+  {"query": "let's brainstorm more feature ideas", "should_trigger": false},
+  {"query": "initialize the hackathon project", "should_trigger": false},
+  {"query": "research the Pinecone API", "should_trigger": false},
+  {"query": "write tests for the search endpoint", "should_trigger": false},
+  {"query": "how do I use GitHub Projects?", "should_trigger": false},
+  {"query": "review my pull request", "should_trigger": false},
+  {"query": "deploy the latest changes to staging", "should_trigger": false}
+]

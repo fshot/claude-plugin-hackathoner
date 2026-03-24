@@ -1,6 +1,6 @@
 ---
 name: checkpoint
-description: Use when reviewing hackathon progress against the timeline — enforces checkpoints, triggers scope cuts, and tracks status. Triggered by /hack checkpoint.
+description: This skill should be used when the user asks "how are we doing", "are we on track", "check our progress", "run a checkpoint", "status check", "progress report", "should we cut scope", "are we behind schedule", mentions being worried about the hackathon timeline, wants to know what is done vs at risk, or asks about P0/P1 issue status during a hackathon. Reviews elapsed time against checkpoint targets (C0-C7), presents a status dashboard, and triggers scope cuts when behind. DO NOT use for creating issues, brainstorming, debugging, PR reviews, or deployment.
 ---
 
 # Checkpoint Skill

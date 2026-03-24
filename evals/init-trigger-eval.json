@@ -1,0 +1,22 @@
+[
+  {"query": "let's get this hackathon project set up", "should_trigger": true},
+  {"query": "we just signed up for the MLH hackathon, help us initialize everything", "should_trigger": true},
+  {"query": "start a new hackathon project from scratch", "should_trigger": true},
+  {"query": "I need to set up our repo, tracking issue, and project board for this weekend's hack", "should_trigger": true},
+  {"query": "kick off hackathon setup — here are the rules from devpost", "should_trigger": true},
+  {"query": "parse these hackathon rules and create the project structure", "should_trigger": true},
+  {"query": "we're starting a 24-hour hackathon tomorrow, get everything ready", "should_trigger": true},
+  {"query": "initialize our hackathon with the rules from this URL", "should_trigger": true},
+  {"query": "set up the hackathon tracker and credentials for our team", "should_trigger": true},
+  {"query": "create the hackathon project — repo, issues, contributing guide, the whole thing", "should_trigger": true},
+  {"query": "initialize a new React project with TypeScript", "should_trigger": false},
+  {"query": "set up a new Next.js app", "should_trigger": false},
+  {"query": "how do I create a GitHub repository?", "should_trigger": false},
+  {"query": "help me write a CONTRIBUTING.md for my open source project", "should_trigger": false},
+  {"query": "what's the best way to structure a Node.js project?", "should_trigger": false},
+  {"query": "research the Pinecone API for our hackathon", "should_trigger": false},
+  {"query": "how are we doing on time? run a checkpoint", "should_trigger": false},
+  {"query": "let's brainstorm feature ideas for the hackathon", "should_trigger": false},
+  {"query": "create a new git repo and push to GitHub", "should_trigger": false},
+  {"query": "scaffold a REST API with Express", "should_trigger": false}
+]

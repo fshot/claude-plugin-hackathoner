@@ -1,0 +1,11 @@
+This skill should be used when the user asks to "brainstorm hackathon ideas", "plan what to build", "figure out what to build", "ideate features for the hackathon", "create hackathon work items", "generate a backlog", "prioritize hackathon features", "storm", wants to decide what to build for a hackathon and assign work to team members, or needs to calibrate against a judging rubric. Runs structured brainstorming producing prioritized GitHub Issues (P0/P1/P2) with assignments, architecture plan, and demo strategy. DO NOT use for brainstorming names, planning schemas, general feature requests, project initialization, or tool research.
+
+---
+Eval results (best iteration, 10/20 = 50%):
+- Baseline: 10/20 (50%) — 0% recall, 100% precision
+- Iteration 1 (intent-focused): 10/20 (50%) — 4 queries hit 1/3
+- Iteration 2 (plugin-dev style): 10/20 (50%) — 0% recall (regression)
+
+NOTE: This skill competes directly with superpowers:brainstorming which has a "MUST trigger"
+directive for any creative work. The iteration 1 description showed better partial triggering.
+Recommendation: Rename to avoid "brainstorming" keyword overlap, or use via /hack storm.

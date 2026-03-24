@@ -1,0 +1,10 @@
+This skill should be used when the user asks to "research a tool", "investigate an API", "look into a service", "deep dive on an SDK", "figure out how to use [tool name]", mentions a hackathon sponsor tool they need to learn about, or wants integration documentation generated for a specific technology (e.g., Pinecone, Supabase, Stripe, Twilio, Algolia, MongoDB, Cloudflare, AWS Bedrock). Produces a project skill with auth patterns and TypeScript examples, a setup README, and optional Terraform fragments. DO NOT use for fixing existing integration bugs, installing packages, deploying, or comparing technologies.
+
+---
+Eval results (best iteration, 10/20 = 50%):
+- Baseline: 10/20 (50%) — 0% recall, 100% precision
+- Iteration 1 (intent-focused): 10/20 (50%) — 2 queries hit 1/3
+- Iteration 2 (plugin-dev style): 10/20 (50%) — 2 queries hit 1/3
+
+NOTE: Same systemic issue as init — competing skills prevent consistent triggering.
+Recommendation: Use via slash command (/hack research <tool>).

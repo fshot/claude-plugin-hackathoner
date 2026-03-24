@@ -1,6 +1,6 @@
 ---
 name: research-tool
-description: Use when researching a hackathon sponsor tool — spawns tool-researcher agent, generates project skill, README, and Terraform fragments. Triggered by /hack research <tool>.
+description: This skill should be used when the user asks to "research a tool", "investigate an API", "look into a service", "deep dive on an SDK", "figure out how to use [tool name]", mentions a hackathon sponsor tool they need to learn about, or wants integration documentation generated for a specific technology (e.g., Pinecone, Supabase, Stripe, Twilio, Algolia, MongoDB, Cloudflare, AWS Bedrock). Produces a project skill with auth patterns and TypeScript examples, a setup README, and optional Terraform fragments. DO NOT use for fixing existing integration bugs, installing packages, deploying, or comparing technologies.
 ---
 
 # Research Tool Skill

@@ -1,6 +1,6 @@
 ---
 name: hackathon-storming
-description: Use when brainstorming and planning hackathon work items — calibrates judging criteria, runs constrained brainstorming, generates prioritized GitHub Issues. Triggered by /hack storm.
+description: This skill should be used when the user asks to "brainstorm hackathon ideas", "plan what to build", "figure out what to build", "ideate features for the hackathon", "create hackathon work items", "generate a backlog", "prioritize hackathon features", "storm", wants to decide what to build for a hackathon and assign work to team members, or needs to calibrate against a judging rubric. Runs structured brainstorming producing prioritized GitHub Issues (P0/P1/P2) with assignments, architecture plan, and demo strategy. DO NOT use for brainstorming names, planning schemas, general feature requests, project initialization, or tool research.
 ---
 
 # Hackathon-Storming Skill

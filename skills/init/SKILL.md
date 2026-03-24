@@ -1,6 +1,6 @@
 ---
 name: init
-description: Use when initializing a new hackathon project — creates repo, tracking issue, CONTRIBUTING.md, CLAUDE.md, and project structure. Triggered by /hack when no tracking issue exists.
+description: This skill should be used when the user asks to "set up a hackathon", "start a hackathon project", "initialize hackathon", "kick off the hack", "parse hackathon rules", "create hackathon repo", mentions Devpost rules, or wants to prepare for an upcoming hackathon event. Sets up GitHub repo, tracking issue, project board, credentials, CLAUDE.md, and CONTRIBUTING.md from parsed hackathon rules. DO NOT use for general project setup, React/Next.js scaffolding, or non-hackathon repositories.
 ---
 
 # Init Skill

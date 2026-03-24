@@ -1,0 +1,22 @@
+[
+  {"query": "research Pinecone for our hackathon project", "should_trigger": true},
+  {"query": "investigate the Supabase API — we need to know how to integrate it", "should_trigger": true},
+  {"query": "look into Cloudflare Workers as a sponsor tool", "should_trigger": true},
+  {"query": "I need a deep dive on the Twilio API before we start building", "should_trigger": true},
+  {"query": "what can we do with the MongoDB Atlas free tier for the hackathon?", "should_trigger": true},
+  {"query": "research how to use the sponsor's API — it's called Convex", "should_trigger": true},
+  {"query": "generate integration docs and a project skill for Vercel AI SDK", "should_trigger": true},
+  {"query": "we got Algolia as a sponsor tool, figure out how to use it", "should_trigger": true},
+  {"query": "do a tool research pass on AWS Bedrock for our project", "should_trigger": true},
+  {"query": "check out the Stripe API and create integration artifacts for the hackathon", "should_trigger": true},
+  {"query": "how do I install the Pinecone Python SDK?", "should_trigger": false},
+  {"query": "fix the bug in our Supabase integration", "should_trigger": false},
+  {"query": "write unit tests for the API endpoint", "should_trigger": false},
+  {"query": "what's the best database for a hackathon project?", "should_trigger": false},
+  {"query": "let's brainstorm ideas for the hackathon", "should_trigger": false},
+  {"query": "run a checkpoint to see how we're doing", "should_trigger": false},
+  {"query": "initialize the hackathon project", "should_trigger": false},
+  {"query": "deploy our app to Vercel", "should_trigger": false},
+  {"query": "compare Postgres vs MongoDB for our use case", "should_trigger": false},
+  {"query": "add error handling to the Twilio webhook handler", "should_trigger": false}
+]

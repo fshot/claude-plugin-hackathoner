@@ -1,0 +1,11 @@
+This skill should be used when the user asks "how are we doing", "are we on track", "check our progress", "run a checkpoint", "status check", "progress report", "should we cut scope", "are we behind schedule", mentions being worried about the hackathon timeline, wants to know what is done vs at risk, or asks about P0/P1 issue status during a hackathon. Reviews elapsed time against checkpoint targets (C0-C7), presents a status dashboard, and triggers scope cuts when behind. DO NOT use for creating issues, brainstorming, debugging, PR reviews, or deployment.
+
+---
+Eval results (best iteration, 11/20 = 55%):
+- Baseline: 10/20 (50%) — 1 query at 1/3 rate
+- Iteration 1 (intent-focused): 11/20 (55%) — "do a progress review" passed (2/3)
+- Iteration 2 (plugin-dev style): 11/20 (55%) — "run a checkpoint review" passed (2/3)
+
+NOTE: Best performing of all four skills. Checkpoint-specific vocabulary ("checkpoint",
+"progress review") was distinctive enough to occasionally win against competing skills.
+The iteration 2 description is recommended as it triggered on more specific checkpoint language.
