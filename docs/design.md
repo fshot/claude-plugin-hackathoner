@@ -219,17 +219,18 @@ Single entry point. Behavior depends on state:
 | P2 | Nice-to-have polish | Only if time after P1s |
 | P-lagniappe | Above and beyond; the "wow" moment | Only if C4 green, 2-3hrs max, zero guilt if cut |
 
-## Tech Stack Defaults
+## Tech Stack
 
-- Runtime: Node.js
-- Package manager: pnpm
-- Language: TypeScript (strict)
-- Frontend: Next.js on Vercel, Tailwind CSS, shadcn/ui
-- IaC: Terraform
-- Local cloud: LocalStack for AWS services
-- Testing: Vitest (unit), Playwright (E2E)
+The scaffold skill does NOT hardcode a tech stack. It reads the hackathon rules (required tech), research artifacts (sponsor tool SDKs), and architecture plan (storming output) to determine the right stack for each project. Common stacks include:
+
+- **Web app:** Node.js/TypeScript/Next.js/pnpm or Python/FastAPI/uv
+- **Agent system:** Python/Google ADK/uv or TypeScript/LangChain/pnpm
+- **Infrastructure:** Terraform, Docker Compose, Cloud Run, Vercel — whatever the project needs
+
+Fixed across all projects:
 - State: GitHub Issues + Projects
 - Comms: GitHub Discussions (configurable)
+- Process: Plan-driven, TDD, checkpoint-enforced
 
 ## SDLC Process
 
