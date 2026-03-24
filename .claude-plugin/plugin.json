@@ -1,0 +1,12 @@
+{
+  "name": "hackathoner",
+  "version": "0.1.0",
+  "description": "Structured hackathon execution: research, scaffold, checkpoint, team routing, demo prep",
+  "author": {
+    "name": "Frank Shotwell",
+    "url": "https://cruxcapacity.com"
+  },
+  "repository": "https://github.com/fshot/claude-plugin-hackathoner",
+  "license": "MIT",
+  "keywords": ["hackathon", "scaffolding", "team-routing", "checkpoints", "demo-prep"]
+}
