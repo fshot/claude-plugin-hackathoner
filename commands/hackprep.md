@@ -91,12 +91,46 @@ Scan the checklist top-to-bottom. Find the **first incomplete item**.
 |-------------------------------|---------------------------------------------------------------|
 | `Rules parsed`                | Ask for rules, invoke `hackathoner:init`                      |
 | `Init complete`               | Invoke skill `hackathoner:init`                               |
-| `Research: <tool>`            | Announce the tool, invoke skill `hackathoner:research-tool` with `<tool>` |
+| `Research: <tool>`            | **See parallel research below**                               |
 | `Team inventory`              | Invoke skill `hackathoner:team-inventory`                     |
 | `Hackathon-storming`          | Invoke skill `hackathoner:hackathon-storming`                 |
 | `Scaffold`                    | Invoke skill `hackathoner:scaffold`                           |
 
 Never skip phases. If an earlier phase is incomplete, do that one first even if a later phase seems more urgent.
+
+### 3d. Parallel Tool Research
+
+When the first incomplete item is a `Research: <tool>` entry, collect ALL incomplete research items from the checklist. Then:
+
+1. **If 1 tool:** Research it directly by invoking `hackathoner:research-tool` with the tool name.
+
+2. **If 2-5 tools:** Dispatch them in parallel using the Agent tool. Launch one `general-purpose` subagent per tool, all in a single message. Each agent should:
+   - Research the tool using WebSearch and WebFetch (the 6 research dimensions: API surface, onboarding, IaC, Claude ecosystem, CLI tools, integration shortcuts)
+   - Generate the project-level skill at `.claude/skills/<tool-name>/SKILL.md`
+   - Generate the human README at `docs/tools/<tool-name>/README.md`
+   - Generate Terraform fragments at `docs/tools/<tool-name>/main.tf` (if applicable)
+   - Update CONTRIBUTING.md with config validation for the tool
+   - Commit its changes to a branch named `research/<tool-name>`
+
+   After all agents complete, merge each branch into main, update the tracking issue to check off all researched tools, and add a summary comment.
+
+3. **If 6+ tools:** Batch into groups of 4-5 and run each batch in parallel. Wait for one batch to finish before starting the next. This avoids overwhelming the system.
+
+**Example with 3 tools (Google ADK, Oracle, Twilio):**
+
+```
+Researching 3 sponsor tools in parallel: Google ADK, Oracle, Twilio
+
+[Dispatch 3 agents simultaneously]
+
+Agent 1: Research Google ADK → .claude/skills/google-adk/SKILL.md
+Agent 2: Research Oracle → .claude/skills/oracle/SKILL.md
+Agent 3: Research Twilio → .claude/skills/twilio/SKILL.md
+
+[All complete]
+
+✅ Research complete for all 3 tools. Proceeding to next phase.
+```
 
 **If all prep phases are complete:**
 
