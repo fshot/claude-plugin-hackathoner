@@ -344,6 +344,10 @@ Hackathon duration: {{DURATION}} hours.
 Challenge track: {{CHALLENGE_TRACK}}
 Team members: {{TEAM_MEMBERS_LIST}}
 
+## Session Start
+
+At the start of every session, run `gh issue view 1 --json title,state,body -q '.title + "\nState: " + .state + "\n\n" + .body'` to load the current hackathon state from the tracking issue. This gives you the phase checklist, checkpoint timeline, team roster, and sponsor tools status. Do this before any other work.
+
 ## Commands
 
 - `/hack` — Pick up your next task. Detects your identity, finds your highest-priority unblocked issue, ensures there's an approved plan, then executes it in a worktree.
