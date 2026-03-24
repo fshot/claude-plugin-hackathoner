@@ -1,0 +1,16 @@
+{
+  "description": "Hackathoner plugin hooks - loads hackathon state on session start",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" session-init.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
