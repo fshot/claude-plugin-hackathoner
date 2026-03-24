@@ -140,6 +140,24 @@ Then stop.
 
 ---
 
+## Step 4: Auto-Advance Loop
+
+After each skill completes successfully, DO NOT stop and wait for the user to type `/hackprep` again. Instead:
+
+1. Briefly announce what just completed (one line)
+2. Re-read the tracking issue to get the updated checklist: `gh issue view 1 --json body -q '.body'`
+3. Find the next incomplete phase
+4. Announce the next phase and invoke it immediately
+
+Keep looping through phases until either:
+- All prep phases are complete → announce and stop
+- A phase requires user input that hasn't been provided → pause and ask
+- A phase fails → report the error and stop
+
+The goal is that the organizer types `/hackprep` once and the entire prep pipeline runs to completion with minimal manual intervention. The only natural pauses are phases that genuinely need user decisions (e.g., hackathon-storming calibration questions, team inventory interviews).
+
+---
+
 ## Important Rules
 
 These rules are non-negotiable. Follow them at all times.
@@ -147,3 +165,4 @@ These rules are non-negotiable. Follow them at all times.
 1. **Never skip phases.** The checklist is sequential. Complete earlier phases before later ones.
 2. **Always announce.** Before invoking any skill, tell the user which phase/skill you are about to run and why.
 3. **Prep only.** This command handles prep phases (init through scaffold). Contributors use `/hack` for work items.
+4. **Auto-advance.** After each phase completes, immediately proceed to the next one. Do not ask "shall I continue?" or tell the user to run `/hackprep` again. Just keep going.
