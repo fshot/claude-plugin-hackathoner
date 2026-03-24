@@ -59,9 +59,19 @@ Interview team members one at a time. For each member, gather the following prof
    >
    > Does this look right? Any corrections?
 
-4. After confirming, ask: "Add another team member? (y/n)"
+4. After confirming, you MUST explicitly ask:
 
-5. Repeat until the user says no.
+   > **How many more team members do you need to add?** (Enter 0 if the team is complete)
+
+   This question is mandatory — do not skip it, even if the user says "looks good" or "proceed." Those phrases confirm the CURRENT member's profile, not the team size. You need an explicit answer about remaining team members before moving on.
+
+5. If the answer is 0, confirm the total team size:
+
+   > **Team complete: {{N}} member(s). Is that right?**
+
+   Only proceed to Step 2 after the user confirms the full roster.
+
+6. If the answer is > 0, repeat the interview for each additional member.
 
 Store all collected profiles — you will use them in subsequent steps.
 
