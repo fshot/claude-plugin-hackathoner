@@ -801,16 +801,23 @@ If `$ARGUMENTS` contains an issue number, use that issue:
 gh issue view $ARGUMENTS --json number,title,assignees,labels,body
 ```
 
-Otherwise, find your highest-priority unblocked issue:
+Otherwise, find your highest-priority unblocked issue. **Bugs come first at every priority level** — a P0 bug beats a P0 feature because bugs block existing functionality.
 
 ```bash
-# Try P0 first, then P1, then P2
+# P0 bugs first, then P0 features
+gh issue list --assignee @me --state open --label P0,bug --json number,title,labels
 gh issue list --assignee @me --state open --label P0 --json number,title,labels
+
+# Then P1 bugs, then P1 features
+gh issue list --assignee @me --state open --label P1,bug --json number,title,labels
 gh issue list --assignee @me --state open --label P1 --json number,title,labels
+
+# Then P2 bugs, then P2 features
+gh issue list --assignee @me --state open --label P2,bug --json number,title,labels
 gh issue list --assignee @me --state open --label P2 --json number,title,labels
 ```
 
-Pick the first issue from the highest available priority level. If no issues are assigned to you, report that and ask what to pick up.
+Pick the first issue from the highest available priority level, bugs before features. If no issues are assigned to you, check for unassigned issues and offer to pick one up.
 
 ## Step 3: Check for an Approved Plan
 
@@ -860,11 +867,17 @@ gh pr create --title "feat: DESCRIPTION (#ISSUE_NUMBER)" \
   --body "## Plan\n\nSee \`docs/plans/PLAN_FILENAME\`\n\nCloses #ISSUE_NUMBER"
 ```
 
-## Step 6: Loop
+## Step 6: Auto-Continue Loop
 
-After the PR is created, tell the user:
+After the PR is created, DO NOT stop and wait for the user. Instead:
 
-> PR created. Run `/hack` to pick up your next issue.
+1. Announce: "PR created for #ISSUE_NUMBER. Checking for next task..."
+2. Return to the main worktree and pull latest
+3. Go back to **Step 1** and pick up the next issue automatically
+
+Keep looping until: no more assigned issues, a step needs user input (e.g., plan approval), or the user interrupts.
+
+If the user passes an issue number (`/hack 42`), execute just that one issue and stop.
 ````
 
 ### 5.2 Create `.claude/commands/checkpoint.md`
