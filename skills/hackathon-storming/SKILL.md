@@ -58,7 +58,7 @@ Ask the user:
 > 3. **Minimum bars?** Any criterion where we just need to be "good enough" rather than exceptional?
 > 4. **Challenge track?** Which track(s) are we targeting? (If multiple tracks exist.)
 
-Record the user's answers — these feed into Phase 3 constraints.
+Record the user's answers — these feed into Phase 3 design discussion and Phase 4 constraints.
 
 ---
 
@@ -75,35 +75,126 @@ Ask the user a series of trade-off questions. Present them as binary or slider c
 > 5. **Risk tolerance:** Are we going for a moonshot (high risk, high reward) or a reliable win (lower risk, solid execution)?
 > 6. **Tech impressiveness vs. Impact story:** Do judges prefer technical depth or a compelling problem/solution narrative?
 
-Record all answers. These shape the brainstorming constraints in Phase 3.
+Record all answers. These shape the design discussion in Phase 3 and brainstorming constraints in Phase 4.
 
 ---
 
-## Phase 3: Brainstorm with Constraints
+## Phase 3: Design Discussion
 
-### 3.1 Assemble Constraints
+**This is the most important design moment of the hackathon.** Rushing it costs more time than spending an extra 15-20 minutes on alignment. The user should feel like they co-designed the solution, not that Claude decided for them.
+
+### 3.1 Present Project Concepts
+
+Using the scoring rubric (Phase 1), build priorities (Phase 2), team roster (from team-routing skill), available tools (from tracking issue), and timeline constraints, generate **2-3 distinct project concepts**. Do NOT present a single predetermined idea — give the user real choices.
+
+For each concept, present:
+
+> **Concept A: {{CONCEPT_NAME}}**
+>
+> {{One-paragraph description of what this project does, who it helps, and why it matters.}}
+>
+> - **Technical approach:** {{Key technology, architecture pattern, or integration strategy that defines this concept.}}
+> - **Main risk:** {{The single biggest thing that could go wrong or block us.}}
+> - **Wow factor for judges:** {{What makes this stand out in a demo? Why would judges remember it?}}
+
+The concepts should represent genuinely different directions — not minor variations of the same idea. Aim for diversity in risk level, technical approach, and demo story.
+
+### 3.2 Get User Reaction
+
+Ask the user to react before committing to any direction:
+
+> **Which direction excites you?**
+>
+> 1. Which concept (or combination) resonates most with the team?
+> 2. What would you change about it?
+> 3. Is there anything missing — an idea from the team, a constraint I don't know about, a technology you're excited to use?
+> 4. Any of these concepts feel like a bad fit? Why?
+
+Listen carefully. The user may want to combine elements from multiple concepts, pivot in an unexpected direction, or surface team context that changes everything. That is the point of this step.
+
+### 3.3 Drill into the Chosen Concept
+
+Once a direction is picked (or synthesized from the options), explore it in depth before committing. Walk through each of these with the user:
+
+> **Let's pressure-test this concept before we commit.**
+>
+> **Core user flow:**
+> Walk me through the end-to-end user experience, step by step. What does the user do first? What happens next? Where does it end?
+>
+> **Demo story:**
+> What will judges actually SEE during the demo? Paint the picture — what's on screen at each moment? What's the narrative arc? Where's the "aha" moment?
+>
+> **Technical unknowns:**
+> What are the things we don't know yet? Are there APIs we haven't tested? Integrations that might not work? Data we might not have access to? What could block us?
+>
+> **MVP vs. stretch:**
+> What's the absolute minimum version that still tells a compelling demo story? What would we add if we had extra time?
+
+This is a conversation, not a checklist. Go back and forth with the user. Challenge assumptions. Surface trade-offs. If the user's answers reveal a problem with the concept, say so and adjust.
+
+### 3.4 Present the Architecture
+
+Before proceeding, present a high-level architecture to the user for sign-off:
+
+> **Proposed Architecture**
+>
+> ```
+> {{TEXT-BASED COMPONENT DIAGRAM}}
+> ```
+>
+> **Components:**
+> - {{Component 1}} — {{what it does, key technology}}
+> - {{Component 2}} — {{what it does, key technology}}
+> - ...
+>
+> **Key data flows:**
+> 1. {{Flow description}}
+> 2. {{Flow description}}
+>
+> **Integration points:**
+> - {{Sponsor tool}} → {{how it connects, what it provides}}
+
+Ask the user:
+
+> **Does this architecture make sense?**
+>
+> - Any components missing or unnecessary?
+> - Does the data flow match your mental model?
+> - Any integration concerns?
+> - Ready to move into detailed brainstorming?
+
+Do not proceed to Phase 4 without explicit approval of the architecture.
+
+---
+
+## Phase 4: Brainstorm with Constraints
+
+### 4.1 Assemble Constraints
 
 Before brainstorming, gather all constraints into a single brief:
 
 - **Scoring rubric** with user-calibrated weights (from Phase 1)
 - **Build priorities** (from Phase 2)
+- **Approved concept and architecture** (from Phase 3)
 - **Team roster** with strengths and available hours (from team-routing skill)
 - **Researched tools** and their capabilities (from tracking issue and tool skills)
 - **Timeline** with checkpoint targets (from tracking issue)
 - **Demo format** and duration (from hackathon-rules)
 - **Submission requirements** (from hackathon-rules)
 
-### 3.2 Run Constrained Brainstorming
+### 4.2 Run Constrained Brainstorming
 
-Use the superpowers:brainstorming approach with all constraints pre-loaded. The brainstorming session must produce:
+Use the superpowers:brainstorming approach with all constraints pre-loaded. **Present options and alternatives rather than a single predetermined plan** — for each major decision (feature scope, integration approach, demo sequence), show the trade-offs and let the user choose.
 
-1. **Project concept:** One-paragraph elevator pitch. What does this project do and why should judges care?
-2. **Feature list with priorities:** Every feature tagged P0/P1/P2/P-lagniappe with justification for the priority level.
-3. **Technical approach:** Architecture overview — what components, what data flows, what integrations.
-4. **Integration plan:** How each sponsor tool fits in. Which tool does what. Order of integration.
-5. **Demo strategy:** What the 3-minute demo shows, in what order, to maximize rubric scores.
+The brainstorming session must produce:
 
-### 3.3 Review with User
+1. **Project concept:** One-paragraph elevator pitch refined from the Phase 3 design discussion.
+2. **Feature list with priorities:** Every feature tagged P0/P1/P2/P-lagniappe with justification for the priority level. Where reasonable, present alternative feature scopes (e.g., "we could do X as a P0 and Y as a P1, OR combine them as a bigger P0 — here's the trade-off").
+3. **Technical approach:** Architecture overview building on the approved architecture from Phase 3 — what components, what data flows, what integrations.
+4. **Integration plan:** How each sponsor tool fits in. Which tool does what. Order of integration. If there are multiple viable integration orders, present them with trade-offs.
+5. **Demo strategy:** What the 3-minute demo shows, in what order, to maximize rubric scores. Present 1-2 alternative demo narratives if the concept supports them.
+
+### 4.3 Review with User
 
 Present the brainstorming output and ask:
 
@@ -114,19 +205,19 @@ Present the brainstorming output and ask:
 > - Any technical concerns with the approach?
 > - Ready to generate work items?
 
-Iterate until the user approves. Do not proceed to Phase 4 without explicit approval.
+Iterate until the user approves. Do not proceed to Phase 5 without explicit approval.
 
 ---
 
-## Phase 4: Generate Work Items
+## Phase 5: Generate Work Items
 
-### 4.0 Feature Zero
+### 5.0 Feature Zero
 
 **Feature Zero is always the first P0 issue created.** If the project involves test data, sample data, or any form of ground truth validation, Feature Zero is the test data manager — the mechanism to upload, preview, tag, and manage test data.
 
 Even if the project doesn't have an obvious test data component, Feature Zero is the "proof of life" — the minimal end-to-end integration that proves the scaffold works, data flows, and the team can ship.
 
-### 4.1 Create GitHub Issues
+### 5.1 Create GitHub Issues
 
 For each work item from the brainstorming output, create a GitHub Issue:
 
@@ -170,7 +261,7 @@ ISSUE_BODY
 )"
 ```
 
-### 4.2 Issue Structure Requirements
+### 5.2 Issue Structure Requirements
 
 Every issue must include:
 
@@ -185,7 +276,7 @@ Every issue must include:
 | **Estimated effort** | Hours estimate for planning |
 | **Dependencies** | Other issues that must be done first, or "None" |
 
-### 4.3 Labels
+### 5.3 Labels
 
 Create labels if they don't exist, then apply:
 
@@ -217,7 +308,7 @@ gh label create "demo" --color "bfdadc" --force
 gh label create "polish" --color "fef2c0" --force
 ```
 
-### 4.4 Assignment
+### 5.4 Assignment
 
 Use the team-routing project skill (`.claude/skills/team-routing/SKILL.md`) to assign each issue:
 
@@ -226,7 +317,7 @@ Use the team-routing project skill (`.claude/skills/team-routing/SKILL.md`) to a
 - Ensure no one person is bottlenecked with all P0s
 - Each issue is assigned to exactly one person
 
-### 4.5 Summary
+### 5.5 Summary
 
 After all issues are created, present a summary table:
 
@@ -238,7 +329,7 @@ After all issues are created, present a summary table:
 
 ---
 
-## Phase 4.5: Lagniappe Discussion
+## Phase 5.5: Lagniappe Discussion
 
 After all P0/P1/P2 work items are created, discuss stretch goals:
 
@@ -261,9 +352,9 @@ Create P-lagniappe issues for any the user approves.
 
 ---
 
-## Phase 5: Commit Architecture Plan
+## Phase 6: Commit Architecture Plan
 
-### 5.1 Write Architecture Plan
+### 6.1 Write Architecture Plan
 
 Create `docs/plans/YYYY-MM-DD-HHMM-architecture.md` using the current timestamp:
 
@@ -321,7 +412,7 @@ phase: "hackathon-storming"
 - {{POINT_3}}
 ```
 
-### 5.2 Commit and Push
+### 6.2 Commit and Push
 
 ```bash
 git add docs/plans/*-architecture.md
@@ -337,9 +428,9 @@ git push
 
 ---
 
-## Phase 6: Update Tracking Issue
+## Phase 7: Update Tracking Issue
 
-### 6.1 Check Off Storming
+### 7.1 Check Off Storming
 
 Edit the tracking issue body to mark storming as complete:
 
@@ -349,7 +440,7 @@ UPDATED_BODY=$(echo "$BODY" | sed 's/- \[ \] Hackathon-storming done/- [x] Hacka
 gh issue edit 1 --body "$UPDATED_BODY"
 ```
 
-### 6.2 Add Comment with Issue Breakdown
+### 7.2 Add Comment with Issue Breakdown
 
 ```bash
 gh issue comment 1 --body "$(cat <<'COMMENT'
@@ -402,9 +493,10 @@ Replace all `{{PLACEHOLDER}}` values with actual data.
 This will:
 1. Load the scoring rubric and calibrate with the user
 2. Calibrate build priorities through trade-off questions
-3. Run constrained brainstorming producing concept, features, architecture, and demo strategy
-4. Create GitHub Issues for every work item (Feature Zero first)
-5. Assign issues to team members based on strengths
-6. Discuss and optionally create lagniappe stretch goals
-7. Commit architecture plan to `docs/plans/`
-8. Update the tracking issue with storming completion and issue breakdown
+3. Explore 2-3 project concepts with the user, drill into the chosen direction, and agree on architecture
+4. Run constrained brainstorming producing features, integration plan, and demo strategy
+5. Create GitHub Issues for every work item (Feature Zero first)
+6. Assign issues to team members based on strengths
+7. Discuss and optionally create lagniappe stretch goals
+8. Commit architecture plan to `docs/plans/`
+9. Update the tracking issue with storming completion and issue breakdown
