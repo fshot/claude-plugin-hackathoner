@@ -352,6 +352,9 @@ At the start of every session, run `gh issue view 1 --json title,state,body -q '
 
 - `/hack` — Pick up your next task. Detects your identity, finds your highest-priority unblocked issue, ensures there's an approved plan, then executes it in a worktree.
 - `/checkpoint` — Review progress against the timeline. Shows status dashboard, identifies risks, suggests scope cuts.
+- `/hack-bug` — Quickly file a bug as a GitHub Issue with hackathon labels and priority.
+- `/hack-feat` — Quickly file a feature idea as a GitHub Issue with hackathon labels and priority.
+- `/hack-retro` — Run a post-hackathon retrospective. Captures results, metrics, reflections, and learnings.
 
 ## Project Skills
 
@@ -978,7 +981,289 @@ gh issue comment 1 --body "## Checkpoint Cx — STATUS
 ```
 ````
 
-### 5.3 Create `.claude/agents/tool-researcher.md`
+### 5.3 Create `.claude/commands/hack-bug.md`
+
+Write the following file to `.claude/commands/hack-bug.md`:
+
+````markdown
+---
+description: Quickly file a bug as a GitHub Issue with hackathon labels and priority
+argument-hint: <brief description of the bug>
+allowed-tools: Bash, AskUserQuestion
+---
+
+# /hack-bug — File a Bug
+
+## Step 1: Get Bug Description
+
+If `$ARGUMENTS` is provided, use it as the bug title.
+
+If not, ask:
+
+> What's the bug? (one line)
+
+## Step 2: Get Priority
+
+Ask:
+
+> How bad is it?
+> - **P0** — Demo breaks
+> - **P1** — Significant impact
+> - **P2** — Minor issue
+
+## Step 3: Gather Details (P0 only)
+
+If the priority is P0, ask:
+
+> What are the steps to reproduce this bug?
+
+For P1 and P2, skip this step.
+
+## Step 4: Create the Issue
+
+```bash
+gh issue create \
+  --title "bug: <DESCRIPTION>" \
+  --label "bug,<PRIORITY>" \
+  --body "$(cat <<'EOF'
+## Description
+
+<DESCRIPTION>
+
+## Steps to Reproduce
+
+<STEPS_IF_P0_OR "N/A">
+
+## Expected Behavior
+
+<Ask or infer>
+
+## Actual Behavior
+
+<Ask or infer>
+
+## Error Messages
+
+<Any error output, or "None provided">
+EOF
+)" \
+  <IF_P0: --assignee @me>
+```
+
+- Use label `bug` plus the priority label (`P0`, `P1`, or `P2`).
+- If P0, assign to current user with `--assignee @me`. Otherwise, leave unassigned.
+
+## Step 5: Report
+
+Print the issue URL and suggest:
+
+> Run `/hack` to pick this up if it's your highest priority.
+````
+
+### 5.4 Create `.claude/commands/hack-feat.md`
+
+Write the following file to `.claude/commands/hack-feat.md`:
+
+````markdown
+---
+description: Quickly file a feature idea as a GitHub Issue with hackathon labels and priority
+argument-hint: <brief description of the feature>
+allowed-tools: Bash, AskUserQuestion
+---
+
+# /hack-feat — File a Feature Idea
+
+## Step 1: Get Feature Description
+
+If `$ARGUMENTS` is provided, use it as the feature title.
+
+If not, ask:
+
+> What's the feature idea? (one line)
+
+## Step 2: Get Priority
+
+Ask:
+
+> How important?
+> - **P0** — Demo needs it
+> - **P1** — Wow factor
+> - **P2** — Nice-to-have
+> - **P-lagniappe** — Stretch goal
+
+## Step 3: Create the Issue
+
+```bash
+gh issue create \
+  --title "feat: <DESCRIPTION>" \
+  --label "enhancement,<PRIORITY>" \
+  --body "$(cat <<'EOF'
+## Description
+
+<DESCRIPTION>
+
+## Why It Matters
+
+<Why this matters for the demo/judges — infer from context or ask briefly>
+
+## Rough Approach (optional)
+
+<If the user mentioned an approach, include it. Otherwise, leave as "TBD during planning.">
+EOF
+)"
+```
+
+- Use label `enhancement` plus the priority label (`P0`, `P1`, `P2`, or `P-lagniappe`).
+- Do not assign — storming/routing handles assignment.
+
+## Step 4: Report
+
+Print the issue URL.
+````
+
+### 5.5 Create `.claude/commands/hack-retro.md`
+
+Write the following file to `.claude/commands/hack-retro.md`:
+
+````markdown
+---
+description: Run a post-hackathon retrospective — captures results, metrics, reflections, and learnings into docs/results.md
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
+---
+
+# /hack-retro — Post-Hackathon Retrospective
+
+## Part 1: Gather Project Metrics Automatically
+
+Collect the following metrics silently (do not ask the user for these):
+
+```bash
+# Commit count
+echo "Commits: $(git rev-list --count HEAD)"
+
+# Merged PRs
+echo "Merged PRs: $(gh pr list --state merged --json number | jq length)"
+
+# Issues by state
+echo "=== Issues ==="
+gh issue list --state all --json state,labels,number,title
+
+# Lines of code (approximate)
+echo "Lines of code:"
+find src -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' -o -name '*.py' 2>/dev/null | xargs wc -l 2>/dev/null | tail -1
+```
+
+Also:
+- Count P0/P1/P2 issues completed vs total from the issue list.
+- Detect test runner and run tests if available: try `pnpm test` or `uv run pytest`. Capture pass/fail counts and coverage if reported.
+- Read tracking issue #1 for checkpoint timeline and final status: `gh issue view 1 --json body --jq '.body'`
+- List plan files: `ls docs/plans/ 2>/dev/null`
+- Check for demo artifacts: `ls docs/demo/ 2>/dev/null`
+
+## Part 2: Ask User for Reflections
+
+Ask these questions **one at a time**, waiting for an answer before asking the next:
+
+1. "What went well? What are you most proud of?"
+2. "What didn't go well? What would you do differently?"
+3. "What surprised you — technically or about the team dynamics?"
+4. "Rate the hackathon tooling (this plugin, Claude Code, etc.) — what helped, what got in the way?"
+5. "Any shoutouts for teammates or specific contributions?"
+6. "If you had 4 more hours, what would you have done?"
+
+## Part 3: Generate docs/results.md
+
+Write a comprehensive results document to `docs/results.md`:
+
+```markdown
+# [Project Name] — Hackathon Results
+
+## Event
+- Hackathon: [name]
+- Date: [date]
+- Team: [members]
+- Track: [challenge track]
+
+## Outcome
+- [Won/Placed/Participated]
+- Demo: [link if available]
+- Submission: [link if available]
+
+## Project Stats
+| Metric | Value |
+|--------|-------|
+| Commits | X |
+| PRs merged | X |
+| Issues closed | X/Y |
+| P0 completed | X/Y |
+| P1 completed | X/Y |
+| P2 completed | X/Y |
+| Test coverage | X% (if available) |
+| Lines of code | X |
+| Plans written | X |
+
+## Checkpoint Performance
+[Table showing each checkpoint target vs actual, parsed from tracking issue #1]
+
+## What Went Well
+[User's reflections from question 1]
+
+## What Didn't Go Well
+[User's reflections from question 2]
+
+## Surprises
+[User's reflections from question 3]
+
+## Tooling Feedback
+[User's reflections from question 4]
+
+## Shoutouts
+[User's reflections from question 5]
+
+## If We Had More Time
+[User's reflections from question 6]
+
+## Key Learnings
+[Synthesize 3-5 bullet points from all of the above — metrics, reflections, and checkpoint performance]
+```
+
+Fill in all values from the metrics gathered in Part 1 and the reflections from Part 2. Read tracking issue #1 to populate Event details and Checkpoint Performance.
+
+## Part 4: Commit and Update Tracking Issue
+
+```bash
+# Commit the results file
+git add docs/results.md
+git commit -m "docs: add hackathon retrospective results"
+git push
+```
+
+Add a final comment to tracking issue #1 summarizing the retrospective:
+
+```bash
+gh issue comment 1 --body "## 🏁 Retrospective Complete
+
+Results written to \`docs/results.md\`.
+
+**Quick stats:** X commits, X PRs merged, X/Y issues closed.
+**P0:** X/Y | **P1:** X/Y | **P2:** X/Y
+
+**Key learnings:**
+- [bullet 1]
+- [bullet 2]
+- [bullet 3]
+
+See \`docs/results.md\` for full details."
+```
+
+Close the tracking issue if not already closed:
+
+```bash
+gh issue close 1 2>/dev/null || echo "Issue already closed"
+```
+````
+
+### 5.6 Create `.claude/agents/tool-researcher.md`
 
 Write the following file to `.claude/agents/tool-researcher.md` — copy the exact content from the plugin's agent definition:
 
@@ -1115,7 +1400,7 @@ Structure your report exactly as follows:
 - Always verify that free-tier limits are sufficient for a demo. If not, flag it immediately.
 ```
 
-### 5.4 Update Directory Creation
+### 5.7 Update Directory Creation
 
 Add to the `mkdir` commands in Phase 4.4 (if not already present):
 
@@ -1140,7 +1425,7 @@ git commit -m "feat: initialize hackathon project — {{EVENT_NAME}}
 - CONTRIBUTING.md with setup instructions
 - .claude/CLAUDE.md with project context
 - .claude/skills/hackathon-rules and hackathon-sdlc
-- .claude/commands/hack and checkpoint for contributors
+- .claude/commands/hack, checkpoint, hack-bug, hack-feat, hack-retro for contributors
 - .claude/agents/tool-researcher for sponsor tool research
 - .env.example with required credentials
 - Directory structure for docs, infra, tests, src"
@@ -1187,6 +1472,9 @@ gh issue comment 1 --body "## ✅ Init Complete
 - \`.claude/skills/hackathon-sdlc/SKILL.md\` — development process
 - \`.claude/commands/hack.md\` — contributor workflow command
 - \`.claude/commands/checkpoint.md\` — progress review command
+- \`.claude/commands/hack-bug.md\` — quick bug filing command
+- \`.claude/commands/hack-feat.md\` — quick feature idea filing command
+- \`.claude/commands/hack-retro.md\` — post-hackathon retrospective command
 - \`.claude/agents/tool-researcher.md\` — sponsor tool research agent
 - \`CONTRIBUTING.md\` — team onboarding
 - \`.env.example\` — credential template
@@ -1217,6 +1505,9 @@ Present a summary to the user:
 > - `.claude/skills/hackathon-sdlc/SKILL.md`
 > - `.claude/commands/hack.md`
 > - `.claude/commands/checkpoint.md`
+> - `.claude/commands/hack-bug.md`
+> - `.claude/commands/hack-feat.md`
+> - `.claude/commands/hack-retro.md`
 > - `.claude/agents/tool-researcher.md`
 > - `CONTRIBUTING.md`
 > - `.env.example`
@@ -1231,6 +1522,6 @@ Present a summary to the user:
 > {{LIST_ANY_UNVERIFIED_CREDENTIALS}}
 >
 > Contributors can clone this repo and use `/hack` to pick up work items — no plugin needed.
-> Available project commands: `/hack` (pick next issue), `/checkpoint` (progress review)
+> Available project commands: `/hack` (pick next issue), `/checkpoint` (progress review), `/hack-bug` (file a bug), `/hack-feat` (file a feature), `/hack-retro` (retrospective)
 >
 > **Next step:** Run `/hack` to continue to the next phase.
