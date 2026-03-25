@@ -767,7 +767,7 @@ Write the following file to `.claude/commands/hack.md`:
 
 ````markdown
 ---
-description: Pick up your next hackathon task — detects your identity, finds your highest-priority issue, checks for a plan, and executes
+description: Pick up your next hackathon task — detects your identity, finds your highest-priority issue, checks for a plan, and executes in a worktree
 argument-hint: "[issue-number] — optionally specify an issue to work on"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, AskUserQuestion, WebFetch, WebSearch, TaskCreate, TaskUpdate, TaskList
 ---
@@ -780,6 +780,8 @@ You are a hackathon contributor. Follow this workflow to pick up and execute you
 
 - **Plans before code** — every issue needs a committed plan in `docs/plans/` before any implementation begins.
 - **P0 before P1 before P2** — strict priority ordering. Never start a lower-priority issue while a higher one is unblocked and assigned to you.
+- **Bugs before features** — at the same priority level, bugs come first.
+- **Skip in-progress issues** — if an issue is labeled `in-progress`, another session is already working on it. Pick the next one.
 - **One owner per issue** — do not take work already assigned to someone else.
 - **Commit frequently** — small, incremental commits. Do not accumulate large uncommitted changes.
 - **Reference the hackathon-sdlc project skill** for plan format, branching strategy, and quality gates.
@@ -795,36 +797,52 @@ Read tracking issue #1 to find the Team Roster table. Match your email or GitHub
 
 ## Step 2: Pick an Issue
 
-If `$ARGUMENTS` contains an issue number, use that issue:
+If `$ARGUMENTS` contains an issue number, use that issue directly (skip the search):
 
 ```bash
 gh issue view $ARGUMENTS --json number,title,assignees,labels,body
 ```
 
-Otherwise, find your highest-priority unblocked issue. **Bugs come first at every priority level** — a P0 bug beats a P0 feature because bugs block existing functionality.
+Otherwise, find your highest-priority unblocked issue that is NOT already in-progress. **Bugs come first at every priority level.**
 
 ```bash
-# P0 bugs first, then P0 features
-gh issue list --assignee @me --state open --label P0,bug --json number,title,labels
-gh issue list --assignee @me --state open --label P0 --json number,title,labels
+# Get all your open issues, excluding in-progress ones
+# P0 bugs first, then P0 non-bugs
+gh issue list --assignee @me --state open --label P0,bug --json number,title,labels -q '[.[] | select(all(.labels[].name; . != "in-progress"))]'
+gh issue list --assignee @me --state open --label P0 --json number,title,labels -q '[.[] | select(all(.labels[].name; . != "in-progress"))]'
 
-# Then P1 bugs, then P1 features
-gh issue list --assignee @me --state open --label P1,bug --json number,title,labels
-gh issue list --assignee @me --state open --label P1 --json number,title,labels
+# Then P1 bugs, then P1 non-bugs
+gh issue list --assignee @me --state open --label P1,bug --json number,title,labels -q '[.[] | select(all(.labels[].name; . != "in-progress"))]'
+gh issue list --assignee @me --state open --label P1 --json number,title,labels -q '[.[] | select(all(.labels[].name; . != "in-progress"))]'
 
-# Then P2 bugs, then P2 features
-gh issue list --assignee @me --state open --label P2,bug --json number,title,labels
-gh issue list --assignee @me --state open --label P2 --json number,title,labels
+# Then P2 bugs, then P2 non-bugs
+gh issue list --assignee @me --state open --label P2,bug --json number,title,labels -q '[.[] | select(all(.labels[].name; . != "in-progress"))]'
+gh issue list --assignee @me --state open --label P2 --json number,title,labels -q '[.[] | select(all(.labels[].name; . != "in-progress"))]'
 ```
 
 Pick the first issue from the highest available priority level, bugs before features. If no issues are assigned to you, check for unassigned issues and offer to pick one up.
 
-## Step 3: Check for an Approved Plan
+Also check for existing worktrees — if a worktree exists for a branch matching `feat/ISSUE_NUMBER-*`, that issue is in-progress in another session:
+
+```bash
+git worktree list
+```
+
+## Step 3: Claim the Issue
+
+Before starting work, mark the issue as in-progress so other sessions skip it:
+
+```bash
+gh issue edit ISSUE_NUMBER --add-label "in-progress"
+gh issue comment ISSUE_NUMBER --body "🔨 Picked up by @$(gh api user -q '.login') — working in worktree"
+```
+
+## Step 4: Check for an Approved Plan
 
 Look for a plan file referencing this issue:
 
 ```bash
-grep -rl "issue.*#ISSUE_NUMBER" docs/plans/ 2>/dev/null
+grep -rl "issue.*#ISSUE_NUMBER\|#ISSUE_NUMBER" docs/plans/ 2>/dev/null
 ```
 
 Also list recent plan files to check manually:
@@ -849,35 +867,78 @@ ls -la docs/plans/
 
 Read the plan file and proceed to implementation.
 
-## Step 4: Implement
+## Step 5: Create Worktree and Implement
 
-1. Create a worktree from main:
-   ```bash
-   git worktree add ../REPO-ISSUE_NUMBER -b feat/ISSUE_NUMBER-SLUG
-   ```
-2. Work in the worktree. Follow the plan step by step.
-3. Commit frequently with messages referencing the issue number.
-4. Run quality gates: lint, type-check, tests.
-
-## Step 5: Create PR
+Create an isolated worktree for this issue:
 
 ```bash
-cd ../REPO-ISSUE_NUMBER
-gh pr create --title "feat: DESCRIPTION (#ISSUE_NUMBER)" \
-  --body "## Plan\n\nSee \`docs/plans/PLAN_FILENAME\`\n\nCloses #ISSUE_NUMBER"
+PROJECT_DIR=$(basename $(pwd))
+BRANCH_NAME="feat/ISSUE_NUMBER-SLUG"
+WORKTREE_PATH="../${PROJECT_DIR}-issue-ISSUE_NUMBER"
+
+git pull
+git worktree add "$WORKTREE_PATH" -b "$BRANCH_NAME"
+cd "$WORKTREE_PATH"
 ```
 
-## Step 6: Auto-Continue Loop
+Now implement in the worktree:
+
+1. Follow the plan step by step
+2. Commit frequently: `git commit -m "feat(#ISSUE_NUMBER): description"`
+3. Run quality gates before finishing: lint, type-check, tests
+4. Push the branch: `git push -u origin $BRANCH_NAME`
+
+## Step 6: Create PR and Clean Up
+
+```bash
+gh pr create --title "DESCRIPTION (#ISSUE_NUMBER)" \
+  --body "$(cat <<'EOF'
+## Plan
+
+See `docs/plans/PLAN_FILENAME`
+
+## Changes
+
+[Brief summary of what was implemented]
+
+Closes #ISSUE_NUMBER
+EOF
+)"
+
+# Return to main worktree
+cd -
+
+# Remove the worktree (branch stays on remote via the PR)
+git worktree remove "$WORKTREE_PATH" 2>/dev/null || true
+
+# Remove in-progress label (PR is the new status indicator)
+gh issue edit ISSUE_NUMBER --remove-label "in-progress"
+```
+
+## Step 7: Auto-Continue Loop
 
 After the PR is created, DO NOT stop and wait for the user. Instead:
 
 1. Announce: "PR created for #ISSUE_NUMBER. Checking for next task..."
-2. Return to the main worktree and pull latest
-3. Go back to **Step 1** and pick up the next issue automatically
+2. Make sure you're in the main worktree (project root)
+3. Pull latest: `git pull`
+4. Go back to **Step 1** and pick up the next issue automatically
 
 Keep looping until: no more assigned issues, a step needs user input (e.g., plan approval), or the user interrupts.
 
-If the user passes an issue number (`/hack 42`), execute just that one issue and stop.
+If the user passes a specific issue number (`/hack 42`), execute just that one issue and stop after the PR.
+
+## Multi-Session Workflow
+
+This command is designed for parallel execution across multiple terminal tabs:
+
+```
+Tab 1: cd project && claude → /hack     → picks issue #5, creates worktree, works...
+Tab 2: cd project && claude → /hack     → sees #5 is in-progress, picks issue #7
+Tab 3: cd project && claude → /hack     → sees #5 and #7 in-progress, picks issue #9
+```
+
+Each tab works in its own worktree. No conflicts, no coordination needed. The `in-progress` label and worktree detection prevent double-picking.
 ````
 
 ### 5.2 Create `.claude/commands/checkpoint.md`
