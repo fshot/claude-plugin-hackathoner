@@ -1,10 +1,10 @@
 ---
-description: "Organizer command for hackathon setup — routes through prep phases (init, research, research-domain, team, brainstorm, scaffold, slides, video, workspaces, autopilot, data, demo)"
+description: "Team lead command for hackathon setup — routes through prep phases (init, research, research-domain, team, brainstorm, scaffold, slides, video, workspaces, autopilot, data, demo)"
 argument-hint: "[phase] [args] — e.g., research <tool>, research-domain <topic>, team, brainstorm, scaffold, slides, video, workspaces, autopilot, data, demo"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, AskUserQuestion, WebFetch, WebSearch, TaskCreate, TaskUpdate, TaskList
 ---
 
-> **Note:** This is the organizer's setup command. Contributors use `/hack` (generated in the project repo) to pick up work items.
+> **Note:** This is the team lead's setup command. Contributors use `/hack` (generated in the project repo) to pick up work items.
 
 # /hackprep — Hackathon Prep Router
 
@@ -172,7 +172,7 @@ Keep looping through phases until either:
 - A phase requires user input that hasn't been provided → pause and ask
 - A phase fails → report the error and stop
 
-The goal is that the organizer types `/hackprep` once and the entire prep pipeline runs to completion with minimal manual intervention. The only natural pauses are phases that genuinely need user decisions (e.g., hackathon-brainstorming calibration questions, team inventory interviews).
+The goal is that the team lead types `/hackprep` once and the entire prep pipeline runs to completion with minimal manual intervention. The only natural pauses are phases that genuinely need user decisions (e.g., hackathon-brainstorming calibration questions, team inventory interviews).
 
 ---
 

@@ -23,11 +23,11 @@ That's it. `/hackprep` auto-detects which phase you're on and runs the next one.
 
 ## Only One Person Installs the Plugin
 
-The organizer installs hackathoner and runs `/hackprep`. That creates a new **hackathon project repo** with project-specific skills, slash commands, and a CLAUDE.md — all committed under `.claude/`. Teammates just clone the project repo and open Claude Code. Everything they need is already there: `/hack` to pick up tasks, `/checkpoint` to check progress, routing rules that know who should work on what. No plugin install required — the project repo carries its own skills.
+One person on the team installs hackathoner and runs `/hackprep`. That creates a new **hackathon project repo** with project-specific skills, slash commands, and a CLAUDE.md — all committed under `.claude/`. Teammates just clone the project repo and open Claude Code. Everything they need is already there: `/hack` to pick up tasks, `/checkpoint` to check progress, routing rules that know who should work on what. No plugin install required — the project repo carries its own skills.
 
 ## Two Commands
 
-**`/hackprep`** — the organizer runs this. It guides you through setup, research, brainstorming, scaffolding, and presentation prep. No arguments needed — it reads the tracking issue and picks up where you left off.
+**`/hackprep`** — your team lead runs this to set up the project. It guides you through setup, research, brainstorming, scaffolding, and presentation prep. No arguments needed — it reads the tracking issue and picks up where you left off.
 
 **`/hack`** — contributors run this during the build phase. It picks up the next assigned issue, generates a plan, creates a worktree, builds, and opens a PR. Loop it.
 
