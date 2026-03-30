@@ -161,6 +161,20 @@ Status assignment rules:
 - **Tests:** GREEN if all pass, YELLOW if < 3 failures, RED if >= 3 failures or no tests exist
 - **Demo:** GREEN if done, YELLOW if before C5, RED if past C5 and not done
 
+### 2.5 Story Check
+
+Append this to every checkpoint output (C1 through C5):
+
+> **Story check:** Can you explain what you've built and why it matters in 30 seconds?
+
+At **C3**, also append:
+
+> **Slides check:** Have you started your slides? If not, now is the time. Not at the deadline.
+
+At **C5**, also append:
+
+> **Demo recording check:** Demo recording should happen NOW. Schedule 45 minutes. Make it a team activity — one person drives, one narrates, one watches for rough spots.
+
 ---
 
 ## Step 3: Scope Cut Protocol

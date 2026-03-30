@@ -1,6 +1,6 @@
 ---
-description: "Organizer command for hackathon setup — routes through prep phases (init, research, team, storm, scaffold, data, demo)"
-argument-hint: "[phase] [args] — e.g., research <tool>, team, storm, scaffold, data, demo"
+description: "Organizer command for hackathon setup — routes through prep phases (init, research, research-domain, team, brainstorm, scaffold, slides, video, workspaces, autopilot, data, demo)"
+argument-hint: "[phase] [args] — e.g., research <tool>, research-domain <topic>, team, brainstorm, scaffold, slides, video, workspaces, autopilot, data, demo"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Agent, Skill, AskUserQuestion, WebFetch, WebSearch, TaskCreate, TaskUpdate, TaskList
 ---
 
@@ -27,17 +27,23 @@ Match the first word of `ARGS` against the table below and invoke the correspond
 
 | First word   | Skill to invoke                  | Pass to skill                        |
 |-------------|----------------------------------|--------------------------------------|
+| `comms`     | `hackathoner:discord-setup`      | Remaining args (if any)              |
 | `research`  | `hackathoner:research-tool`      | Everything after "research" (the tool name) |
+| `research-domain` | `hackathoner:research-domain` | Everything after "research-domain" (the topic) |
 | `team`      | `hackathoner:team-inventory`     | Remaining args (if any)              |
-| `storm`     | `hackathoner:hackathon-storming` | Remaining args (if any)              |
+| `brainstorm`| `hackathoner:hackathon-brainstorming` | Remaining args (if any)              |
 | `scaffold`  | `hackathoner:scaffold`           | Remaining args (if any)              |
 | `checkpoint`| `hackathoner:checkpoint`         | Remaining args (if any)              |
 | `data`      | `hackathoner:sample-data`        | Remaining args (if any)              |
 | `demo`      | `hackathoner:demo-prep`          | Remaining args (if any)              |
+| `slides`    | `hackathoner:slide-assembly`     | Remaining args (if any)              |
+| `video`     | `hackathoner:demo-videography`   | Remaining args (if any)              |
+| `workspaces`| `hackathoner:workspace-setup`    | Remaining args (if any)              |
+| `autopilot` | `hackathoner:autonomous-mode`    | Remaining args (if any)              |
 
 If the first word does not match any known phase, tell the user:
 
-> Unknown phase: `<word>`. Available phases: research, team, storm, scaffold, checkpoint, data, demo.
+> Unknown phase: `<word>`. Available phases: comms, research, research-domain, team, brainstorm, scaffold, checkpoint, slides, video, workspaces, autopilot, data, demo.
 > Run `/hackprep` with no arguments to auto-detect the next action.
 
 Then stop.
@@ -74,8 +80,9 @@ Extract the phase checklist from the issue body. It looks like:
 - [x] Init complete
 - [ ] Research: ToolA
 - [ ] Research: ToolB
+- [ ] Domain research: TopicA
 - [x] Team inventory
-- [ ] Hackathon-storming
+- [ ] Hackathon-brainstorming
 - [ ] Scaffold
 ```
 
@@ -91,9 +98,11 @@ Scan the checklist top-to-bottom. Find the **first incomplete item**.
 |-------------------------------|---------------------------------------------------------------|
 | `Rules parsed`                | Ask for rules, invoke `hackathoner:init`                      |
 | `Init complete`               | Invoke skill `hackathoner:init`                               |
+| `Comms channel set up`        | Invoke skill `hackathoner:discord-setup`                      |
 | `Research: <tool>`            | **See parallel research below**                               |
+| `Domain research: <topic>`    | **See parallel domain research below**                        |
 | `Team inventory`              | Invoke skill `hackathoner:team-inventory`                     |
-| `Hackathon-storming`          | Invoke skill `hackathoner:hackathon-storming`                 |
+| `Hackathon-brainstorming`     | Invoke skill `hackathoner:hackathon-brainstorming`            |
 | `Scaffold`                    | Invoke skill `hackathoner:scaffold`                           |
 
 Never skip phases. If an earlier phase is incomplete, do that one first even if a later phase seems more urgent.
@@ -132,6 +141,15 @@ Agent 3: Research Twilio → .claude/skills/twilio/SKILL.md
 ✅ Research complete for all 3 tools. Proceeding to next phase.
 ```
 
+### 3e. Parallel Domain Research
+
+When the first incomplete item is a `Domain research: <topic>` entry, collect ALL incomplete domain research items from the checklist. Then:
+
+1. **If 1 topic:** Research it directly by invoking `hackathoner:research-domain` with the topic.
+2. **If 2+ topics:** Dispatch them in parallel using the Agent tool — same pattern as parallel tool research. Each agent researches one topic and generates the project skill and reference doc.
+
+Domain research runs after tool research and before team inventory. The output informs brainstorming decisions (e.g., which compliance rules to prioritize as P0 vs P1).
+
 **If all prep phases are complete:**
 
 Announce: "All prep phases complete. Contributors can now use `/hack` to start building."
@@ -154,7 +172,7 @@ Keep looping through phases until either:
 - A phase requires user input that hasn't been provided → pause and ask
 - A phase fails → report the error and stop
 
-The goal is that the organizer types `/hackprep` once and the entire prep pipeline runs to completion with minimal manual intervention. The only natural pauses are phases that genuinely need user decisions (e.g., hackathon-storming calibration questions, team inventory interviews).
+The goal is that the organizer types `/hackprep` once and the entire prep pipeline runs to completion with minimal manual intervention. The only natural pauses are phases that genuinely need user decisions (e.g., hackathon-brainstorming calibration questions, team inventory interviews).
 
 ---
 

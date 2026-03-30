@@ -125,14 +125,17 @@ gh issue create --title "🏁 Hackathon Tracker: {{EVENT_NAME}}" --body "$(cat <
 | **Location** | {{LOCATION}} |
 | **Demo format** | {{DEMO_FORMAT}} |
 | **Submission** | {{SUBMISSION_REQUIREMENTS}} |
+| **Comms** | {{COMMS_PLATFORM}}: {{COMMS_URL}} |
 
 ## Phase Checklist
 
 - [x] Rules parsed
 - [ ] Init complete
+- [ ] Comms channel set up
 - [ ] Team inventory done
 - [ ] Tools researched
-- [ ] Hackathon-storming done
+- [ ] Domain researched
+- [ ] Hackathon-brainstorming done
 - [ ] Scaffold committed
 - [ ] Feature Zero working
 - [ ] Build phase (checkpoint-driven)
@@ -143,10 +146,10 @@ gh issue create --title "🏁 Hackathon Tracker: {{EVENT_NAME}}" --body "$(cat <
 
 | Criterion | Weight | Our Strategy |
 |-----------|--------|-------------|
-| {{CRITERION_1}} | {{WEIGHT_1}} | _TBD after storming_ |
-| {{CRITERION_2}} | {{WEIGHT_2}} | _TBD after storming_ |
-| {{CRITERION_3}} | {{WEIGHT_3}} | _TBD after storming_ |
-| {{CRITERION_4}} | {{WEIGHT_4}} | _TBD after storming_ |
+| {{CRITERION_1}} | {{WEIGHT_1}} | _TBD after brainstorming_ |
+| {{CRITERION_2}} | {{WEIGHT_2}} | _TBD after brainstorming_ |
+| {{CRITERION_3}} | {{WEIGHT_3}} | _TBD after brainstorming_ |
+| {{CRITERION_4}} | {{WEIGHT_4}} | _TBD after brainstorming_ |
 
 ## Sponsor Tools
 
@@ -186,17 +189,31 @@ ISSUE_BODY
 
 Replace all `{{PLACEHOLDER}}` values with the actual parsed data from Phase 1. For checkpoint times, calculate offsets from the hackathon start time. If the start time is unknown, leave as relative offsets (e.g., "Start + 3h").
 
-### 2.4 Optionally Enable GitHub Discussions
+**Expanding research checklist items:**
+
+- Replace `- [ ] Tools researched` with one `- [ ] Research: <tool>` line per sponsor tool identified in the rules (e.g., `- [ ] Research: TwelveLabs`, `- [ ] Research: AWS Bedrock`).
+- Replace `- [ ] Domain researched` with one `- [ ] Domain research: <topic>` line per domain topic identified from the challenge. Analyze the challenge track and judging criteria to detect regulated domains, compliance frameworks, classification systems, or industry standards the team must understand (e.g., `- [ ] Domain research: broadcast-compliance`, `- [ ] Domain research: content-rating-systems`). If no domain topics are obvious, keep the single `- [ ] Domain researched` line — the research-domain skill will analyze the challenge and identify topics at runtime.
+
+### 2.4 Team Communication Channel
+
+Hackathon teams need a real-time comms channel. Discord is the default recommendation because setup is faster (~2 min vs ~15 min for Slack), it's fully scriptable via bot API, teammates join with one click (no email verification), and the server can be deleted after the hackathon.
 
 Ask the user:
 
-> Would you like to enable GitHub Discussions for team communication? (y/n)
+> **Team communication setup**
+>
+> Did the hackathon organizers provide a Discord server or Slack workspace?
+>
+> 1. **Yes** — I have an invite/workspace link (paste it)
+> 2. **No** — Set one up for me
+>
+> If no channel was provided, I'll create a Discord server with hackathon channels — takes about 2 minutes.
 
-If yes:
+**If organizers provided a channel:** Record the link and skip to Phase 3. The link will be added to the tracking issue and CONTRIBUTING.md during Phase 4.
 
-```bash
-gh repo edit {{OWNER}}/{{REPO_NAME}} --enable-discussions
-```
+**If no channel was provided:** Invoke skill `hackathoner:discord-setup` to create a Discord server with channels, roles, and a never-expiring invite link. The skill handles bot token setup, server creation, and recording the result in the tracking issue.
+
+Store the comms platform and invite URL for use in Phase 4 templates: `{{COMMS_PLATFORM}}` and `{{COMMS_URL}}`.
 
 ---
 
@@ -343,6 +360,7 @@ This is a hackathon project for **{{EVENT_NAME}}** ({{DATES}}).
 Hackathon duration: {{DURATION}} hours.
 Challenge track: {{CHALLENGE_TRACK}}
 Team members: {{TEAM_MEMBERS_LIST}}
+Comms: {{COMMS_PLATFORM}} — {{COMMS_URL}}
 
 ## Session Start
 
@@ -557,6 +575,9 @@ test-results/
 
 # Misc
 *.log
+
+# Hackathoner identity (per-user, not shared)
+.hackathoner.local.md
 ```
 
 ### 4.4 Create Directory Structure
@@ -1188,7 +1209,7 @@ EOF
 ```
 
 - Use label `enhancement` plus the priority label (`P0`, `P1`, `P2`, or `P-lagniappe`).
-- Do not assign — storming/routing handles assignment.
+- Do not assign — brainstorming/routing handles assignment.
 
 ## Step 4: Report
 
@@ -1599,3 +1620,16 @@ Present a summary to the user:
 > Available project commands: `/hack` (pick next issue), `/checkpoint` (progress review), `/hack-bug` (file a bug), `/hack-feat` (file a feature), `/hack-retro` (retrospective)
 >
 > **Next step:** Run `/hack` to continue to the next phase.
+
+---
+
+## Phase 8: Workspace Setup (Optional)
+
+After the initial commit, offer the workspace pattern:
+
+> **Would you like separate workspaces for coordination and building?**
+> This is recommended for teams of 2+ or when you want to keep your director and builder contexts separate.
+
+If the user says yes, invoke skill `hackathoner:workspace-setup`.
+
+If the user says no, continue. This can always be set up later with `/hackprep workspaces`.

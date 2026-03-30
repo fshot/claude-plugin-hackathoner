@@ -104,6 +104,27 @@ If there are multiple members, include one row per member. Use the `sed` replace
 
 ---
 
+### Step 2.5: Domain Experience Check
+
+After finalizing the roster, print this advisory:
+
+> **Domain experience check:** Does anyone on this team have *lived experience* with the problem you're solving? Teams with real domain expertise consistently outperform those building for theoretical users. If no one on the team has felt this pain firsthand, consider pivoting to a problem someone knows.
+
+This is advisory only — do not block progress. Print it and continue.
+
+### Step 2.6: API Key Conflict Check
+
+After collecting all profiles, check if multiple team members will be using the same sponsor tools. For each sponsor tool in the tracking issue:
+
+1. Note which team member's API key will be used (from their `.env` or credentials)
+2. If two or more members have configured different API keys for the same service, print:
+
+> **API key conflict detected:** @member1 and @member2 have different [service] API keys configured. This will cause cross-session conflicts — one person's agent may create resources under a different account than expected. Pick one key and share it across the team.
+
+This is a warning, not a blocker. Print it and continue.
+
+---
+
 ### Step 3: Generate Team-Routing Project Skill
 
 Create `.claude/skills/team-routing/SKILL.md` in the **target hackathon project repo** (not the plugin repo):
@@ -172,9 +193,43 @@ Other skills reference this skill when they need to assign work. Example:
 
 Replace `{{FULL_ROSTER_TABLE_ROWS}}` with one row per collected team member, including all profile fields.
 
+Include this identity resolution order in the generated team-routing skill:
+
+> **Identity resolution (checked in order):**
+> 1. `.hackathoner.local.md` file in project root (fastest, no shell)
+> 2. `HACKATHONER_USER` environment variable
+> 3. `git config user.name` mapped against the roster
+> 4. If none match: ask once, then write `.hackathoner.local.md`
+
+Include this attribution format in the generated team-routing skill:
+
+> **Activity attribution:** When posting comments to the tracking issue or closing issues, always use this format:
+>
+> `**@username** (via Claude agent) closed #N — PR #M`
+>
+> The `(via Claude agent)` suffix is mandatory when Claude posts on behalf of a user. This distinguishes actions taken by the human from actions taken by their agent.
+
 ---
 
-### Step 4: Update CONTRIBUTING.md
+### Step 4: Configure Local Identity
+
+After generating the team-routing skill, ask:
+
+> **Which team member are you?** I'll save this so `/hack` knows who you are without asking every time.
+
+Present the roster as a numbered list. After the user selects, write `.hackathoner.local.md` in the project root:
+
+```markdown
+---
+user: <selected-github-username>
+---
+```
+
+This file is gitignored — each teammate creates their own when they first run `/hack` or `/hackprep team`.
+
+---
+
+### Step 5: Update CONTRIBUTING.md
 
 Open the project's `CONTRIBUTING.md` and add a team section. If a `## Team` section already exists, replace it. Otherwise, append it before the `## Project Structure` section (or at the end if that section doesn't exist).
 
@@ -202,7 +257,7 @@ Replace all placeholders with actual collected data. Infer the primary comms cha
 
 ---
 
-### Step 5: Mark Phase Complete
+### Step 6: Mark Phase Complete
 
 Update the tracking issue checklist and add a completion comment.
 
@@ -235,7 +290,7 @@ gh issue comment 1 --body "## ✅ Team Inventory Complete
 
 ---
 
-### Step 6: Commit and Push
+### Step 7: Commit and Push
 
 Stage all modified and generated files in the target project repo:
 

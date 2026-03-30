@@ -1,12 +1,12 @@
 {
   "name": "hackathoner",
-  "version": "0.1.0",
-  "description": "Structured hackathon execution: research, scaffold, checkpoint, team routing, demo prep",
+  "version": "0.2.0",
+  "description": "Structure your next hackathon, game jam, or sprint with Claude Code — plans before code, storytelling from brainstorm to demo, checkpoint discipline",
   "author": {
     "name": "Frank Shotwell",
     "url": "https://cruxcapacity.com"
   },
   "repository": "https://github.com/fshot/claude-plugin-hackathoner",
   "license": "MIT",
-  "keywords": ["hackathon", "scaffolding", "team-routing", "checkpoints", "demo-prep"]
+  "keywords": ["hackathon", "game-jam", "sprint", "scaffolding", "team-routing", "checkpoints", "demo-prep", "storytelling", "claude-code-plugin"]
 }

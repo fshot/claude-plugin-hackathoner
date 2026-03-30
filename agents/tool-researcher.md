@@ -38,6 +38,7 @@ Investigate each of the following six dimensions. For each dimension, note what 
 - **SDKs**: Official SDKs and their languages. Note which SDK is most mature. Check npm, PyPI, and Go modules.
 - **Authentication**: Auth method (API key, OAuth2, JWT, service account). How to obtain credentials. Whether there is a free tier or hackathon-specific access.
 - **Rate Limits**: Documented rate limits. Whether the free tier is sufficient for demo-scale usage.
+- **Region Availability**: If the tool is hosted on or accessed through a cloud provider (AWS Bedrock, Azure, GCP), check which regions the service/model is available in. Many services (e.g., Twelve Labs Marengo/Pegasus on Bedrock) are only available in a handful of regions. List the available regions explicitly and flag if `us-east-1` is NOT among them, since that's the most common default. This is a critical blocker if the team's infrastructure is in an unsupported region.
 - **Gotchas**: Breaking changes in recent versions, deprecated endpoints, known bugs, surprising behavior. Check GitHub issues and changelogs.
 
 ### 2. Onboarding
@@ -106,7 +107,7 @@ Structure your report exactly as follows:
 <Numbered steps from zero to working integration. Be specific: exact commands, exact URLs, exact config.>
 
 ## Red Flags
-<Anything that could block or slow the team. Be blunt.>
+<Anything that could block or slow the team. Be blunt. Region restrictions, waitlists, approval gates, and model availability limits go here — these are the #1 silent killers at hackathons.>
 
 ## Recommended Approach
 <Your opinionated recommendation for the fastest, most reliable integration path given hackathon constraints.>
@@ -119,7 +120,8 @@ Structure your report exactly as follows:
 3. Search the Terraform Registry for providers.
 4. Search npm and GitHub for MCP servers.
 5. Check the tool's status page or Twitter for ongoing incidents.
-6. If information is conflicting or unclear, note the uncertainty explicitly rather than guessing.
+6. **Check region availability.** If the tool runs on or through a cloud provider (AWS Bedrock, Azure AI, GCP Vertex), search for which regions support the specific models/services. Search for `"<tool name>" region availability` and check the provider's service availability pages. Region restrictions are a silent killer — the API returns confusing errors rather than saying "not available here."
+7. If information is conflicting or unclear, note the uncertainty explicitly rather than guessing.
 
 ## Constraints
 

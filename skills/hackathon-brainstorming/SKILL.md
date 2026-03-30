@@ -1,9 +1,9 @@
 ---
-name: hackathon-storming
+name: hackathon-brainstorming
 description: This skill should be used when the user asks to "brainstorm hackathon ideas", "plan what to build", "figure out what to build", "ideate features for the hackathon", "create hackathon work items", "generate a backlog", "prioritize hackathon features", "storm", wants to decide what to build for a hackathon and assign work to team members, or needs to calibrate against a judging rubric. Runs structured brainstorming producing prioritized GitHub Issues (P0/P1/P2) with assignments, architecture plan, and demo strategy. DO NOT use for brainstorming names, planning schemas, general feature requests, project initialization, or tool research.
 ---
 
-# Hackathon-Storming Skill
+# Hackathon-Brainstorming Skill
 
 Structured brainstorming that produces a prioritized backlog of assigned GitHub Issues. Every phase builds on the previous — do not skip phases.
 
@@ -82,6 +82,14 @@ Record all answers. These shape the design discussion in Phase 3 and brainstormi
 ## Phase 3: Design Discussion
 
 **This is the most important design moment of the hackathon.** Rushing it costs more time than spending an extra 15-20 minutes on alignment. The user should feel like they co-designed the solution, not that Claude decided for them.
+
+### 3.0 Story-First Framing
+
+Before designing solutions, ask the user:
+
+> **Before we design:** Who is the person this tool is for? Not a persona — a real human with a name and a job title. What's their struggle today? How does solving it change their life? The winning demo tells *their* story, not yours.
+
+Wait for the user's answer. Use their response to anchor the concept options in Phase 3.1.
 
 ### 3.1 Present Project Concepts
 
@@ -327,6 +335,24 @@ After all issues are created, present a summary table:
 > |---|-------|----------|----------|------------|--------|
 > | {{ISSUE_NUM}} | {{TITLE}} | {{PRIORITY}} | @{{ASSIGNEE}} | {{CHECKPOINT}} | {{EFFORT}}h |
 
+### 5.6 Presentation Work Items
+
+If the hackathon includes a presentation, demo, or pitch component (check the parsed rules), auto-generate these two P1 issues:
+
+**Issue: "Assemble presentation slides"**
+- Priority: P1
+- Checkpoint target: C3
+- Description: "Build a slide deck that tells the user's story. Start with the problem (who hurts, why), then the journey (how their life changes), then the solution. Use docs/demo/slides.md (Marp format). Screenshots can be added later. The story matters more than the formatting."
+- Label: `presentation`
+
+**Issue: "Record demo video"**
+- Priority: P1
+- Checkpoint target: C5
+- Description: "Record a polished screenshare + voiceover demo. Script it first (docs/demo/video-script.md), rehearse once, then record with margin. Make this a team activity — one person drives, one narrates, one watches for rough spots. Do NOT leave this for the final 15 minutes."
+- Label: `presentation`
+
+If the hackathon format is unclear about presentations, generate the issues anyway but add a note: "Recommended even if not required — the winning teams always have slides."
+
 ---
 
 ## Phase 5.5: Lagniappe Discussion
@@ -361,7 +387,7 @@ Create `docs/plans/YYYY-MM-DD-HHMM-architecture.md` using the current timestamp:
 ```markdown
 ---
 issue: "#1"
-phase: "hackathon-storming"
+phase: "hackathon-brainstorming"
 ---
 
 # Architecture Plan: {{PROJECT_CONCEPT_NAME}}
@@ -416,7 +442,7 @@ phase: "hackathon-storming"
 
 ```bash
 git add docs/plans/*-architecture.md
-git commit -m "docs(plan): architecture plan from hackathon-storming
+git commit -m "docs(plan): architecture plan from hackathon-brainstorming
 
 - Project concept and architecture overview
 - Feature map with priorities and assignments
@@ -430,13 +456,13 @@ git push
 
 ## Phase 7: Update Tracking Issue
 
-### 7.1 Check Off Storming
+### 7.1 Check Off Brainstorming
 
-Edit the tracking issue body to mark storming as complete:
+Edit the tracking issue body to mark brainstorming as complete:
 
 ```bash
 BODY=$(gh issue view 1 --json body --jq '.body')
-UPDATED_BODY=$(echo "$BODY" | sed 's/- \[ \] Hackathon-storming done/- [x] Hackathon-storming done/')
+UPDATED_BODY=$(echo "$BODY" | sed 's/- \[ \] Hackathon-brainstorming done/- [x] Hackathon-brainstorming done/')
 gh issue edit 1 --body "$UPDATED_BODY"
 ```
 
@@ -444,7 +470,7 @@ gh issue edit 1 --body "$UPDATED_BODY"
 
 ```bash
 gh issue comment 1 --body "$(cat <<'COMMENT'
-## ✅ Hackathon-Storming Complete
+## ✅ Hackathon-Brainstorming Complete
 
 ### Concept
 {{ONE_LINE_CONCEPT}}
@@ -480,14 +506,14 @@ Replace all `{{PLACEHOLDER}}` values with actual data.
 - **No team-routing skill:** Warn the user, proceed without assignments. Create issues unassigned and note that `/hack team` should be run to assign them.
 - **Label creation fails:** Labels may already exist. Use `--force` flag to handle idempotently.
 - **Issue creation fails:** Log the error, continue with remaining issues, report failures at the end.
-- **User wants to re-storm:** This skill is idempotent — existing issues are not duplicated. If re-running, ask whether to close existing storming issues first or add to them.
+- **User wants to re-brainstorm:** This skill is idempotent — existing issues are not duplicated. If re-running, ask whether to close existing brainstorming issues first or add to them.
 
 ---
 
 ## Example Usage
 
 ```
-/hack storm
+/hack brainstorm
 ```
 
 This will:
@@ -499,4 +525,4 @@ This will:
 6. Assign issues to team members based on strengths
 7. Discuss and optionally create lagniappe stretch goals
 8. Commit architecture plan to `docs/plans/`
-9. Update the tracking issue with storming completion and issue breakdown
+9. Update the tracking issue with brainstorming completion and issue breakdown

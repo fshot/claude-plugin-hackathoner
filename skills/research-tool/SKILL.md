@@ -40,6 +40,7 @@ The skill body must include:
 - **TypeScript Examples**: Copy-pasteable code snippets for common operations. Use the official SDK if one exists.
 - **Error Handling**: Common error codes and how to handle them.
 - **Gotchas**: Anything surprising from the research report's Red Flags section.
+- **Region Availability**: If cloud-hosted (AWS Bedrock, Azure, GCP), which regions support this service. Flag if the team's default region is unsupported.
 - **Rate Limits**: What the team needs to stay within.
 
 ### Step 3: Generate Human README

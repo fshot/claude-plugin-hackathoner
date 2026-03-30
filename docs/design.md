@@ -18,6 +18,7 @@ The plugin operates at two levels:
 ## Core Philosophy
 
 - Humans design, Claude builds. Maximize human time on architecture, testing, and refinement.
+- Story-first. Before designing solutions, identify the hero, their struggle, and their journey. The winning demo tells the user's story, not yours.
 - Spec-driven development. No code without an approved plan.
 - Bias to action. `/hack` with no args picks up the next task and goes.
 - Feature Zero: if test data matters, the test data manager is the first deliverable.
@@ -35,13 +36,18 @@ claude-plugin-hackathoner/
 │   ├── init/SKILL.md                 # Repo, creds, tracking issue, CONTRIBUTING.md
 │   ├── research-tool/SKILL.md        # Probe sponsor tool → generate project skill
 │   ├── team-inventory/SKILL.md       # Roster, strengths, routing rules
-│   ├── hackathon-storming/SKILL.md   # Brainstorming wrapper with hackathon constraints
+│   ├── hackathon-brainstorming/SKILL.md # Brainstorming wrapper with hackathon constraints
 │   ├── scaffold/SKILL.md             # Stubs, mocks, test harnesses, Feature Zero, IaC
 │   ├── checkpoint/SKILL.md           # Timeline enforcement, scope cuts
 │   ├── sample-data/SKILL.md          # Test data curation, ground truth, validation
-│   └── demo-prep/SKILL.md            # Recording, slides, submission packaging
+│   ├── demo-prep/SKILL.md            # Recording, slides, submission packaging
+│   ├── slide-assembly/SKILL.md       # Marp slide deck from story + features
+│   ├── demo-videography/SKILL.md     # Demo recording guide and script
+│   ├── workspace-setup/SKILL.md      # Director/builder checkout pattern
+│   └── autonomous-mode/SKILL.md      # Experimental /loop-based watchdog
 ├── agents/
-│   └── tool-researcher.md            # Deep-dive research agent for sponsor tools
+│   ├── tool-researcher.md            # Deep-dive research agent for sponsor tools
+│   └── domain-researcher.md          # Domain standards/regulations research agent
 ├── hooks/
 │   └── hooks.json                    # SessionStart: load state, show next phase
 └── scripts/
@@ -98,10 +104,12 @@ Single entry point. Behavior depends on state:
   │   └─ Resume next incomplete prep phase
   │
   ├─ All prep done, no work items?
-  │   └─ Run hackathon-storming → generate issues
+  │   └─ Run hackathon-brainstorming → generate issues
   │
   └─ Work items exist, prep complete?
-      ├─ Detect current user (git config → GitHub username)
+      ├─ Detect current user (identity resolution order:
+      │     1. .hackathoner.local.md → 2. HACKATHONER_USER env
+      │     3. git config user.name → 4. ask once, write .hackathoner.local.md)
       ├─ Check: does next issue have an approved plan?
       │   ├─ No → Generate plan, commit to main, wait for approval
       │   └─ Yes → Create worktree, execute plan
@@ -110,7 +118,7 @@ Single entry point. Behavior depends on state:
 
 /hack research <tool>    # Research a specific tool
 /hack team               # Run team inventory
-/hack storm              # Run hackathon-storming
+/hack brainstorm         # Run hackathon-brainstorming
 /hack scaffold           # Run scaffold phase
 /hack checkpoint         # View/run checkpoint review
 /hack data               # Manage test data
@@ -130,7 +138,7 @@ Single entry point. Behavior depends on state:
 - Create GitHub repo (or use existing)
 - Create GitHub Project board (Backlog, Ready, In Progress, Review, Done)
 - Create tracking issue #1 with phase checklist
-- Enable GitHub Discussions for team comms (configurable)
+- Set up team communication channel (Discord by default, or organizer-provided)
 - Walk through scoped credential creation (GitHub PAT 7-day expiry, AWS IAM user)
 - Verify credentials work
 - Generate CONTRIBUTING.md with prerequisites, workflow, config validation checklist
@@ -158,7 +166,7 @@ Single entry point. Behavior depends on state:
 - Generate team-routing project skill with assignment heuristics
 - Update CONTRIBUTING.md with team section
 
-### 5. Hackathon-Storming
+### 5. Hackathon-Brainstorming
 - Phase 1: Calibrate judging criteria from parsed rules
 - Phase 2: Calibrate priorities (creativity vs polish vs scale; NFRs; demo-ability)
 - Phase 3: Invoke brainstorming with all constraints pre-loaded (rubric, team, tools, timeline)
@@ -187,13 +195,22 @@ Single entry point. Behavior depends on state:
 - P0 before P1 before P2. P-lagniappe only if C4 is green.
 - No new features after C5.
 
-### 8. Demo Prep
+### 8. Demo & Presentation
+
+### 8a. Slides
+- Generate Marp slide deck from story + features
+- Capture screenshots if app is running
+- Recommended starting at C3
+
+### 8b. Demo Video
+- Generate timed demo script
+- Pre-load demo state
+- Guide team through recording (driver/narrator/spotter)
+- Recommended at C5, not at deadline
+
+### 8c. Demo Prep
 - Demo readiness audit (all P0 working, no errors, test data populated)
-- Generate 3-minute demo script from rubric and features built
-- Pre-load demo state (seed script to index clips and run analysis)
 - Capture screenshots via Playwright
-- Record backup video
-- Generate backup slide deck from screenshots
 - Submission packaging checklist
 - Final tracking issue comment with all submission links
 
@@ -221,7 +238,7 @@ Single entry point. Behavior depends on state:
 
 ## Tech Stack
 
-The scaffold skill does NOT hardcode a tech stack. It reads the hackathon rules (required tech), research artifacts (sponsor tool SDKs), and architecture plan (storming output) to determine the right stack for each project. Common stacks include:
+The scaffold skill does NOT hardcode a tech stack. It reads the hackathon rules (required tech), research artifacts (sponsor tool SDKs), and architecture plan (brainstorming output) to determine the right stack for each project. Common stacks include:
 
 - **Web app:** Node.js/TypeScript/Next.js/pnpm or Python/FastAPI/uv
 - **Agent system:** Python/Google ADK/uv or TypeScript/LangChain/pnpm
@@ -229,7 +246,7 @@ The scaffold skill does NOT hardcode a tech stack. It reads the hackathon rules 
 
 Fixed across all projects:
 - State: GitHub Issues + Projects
-- Comms: GitHub Discussions (configurable)
+- Comms: Discord (default) or organizer-provided channel
 - Process: Plan-driven, TDD, checkpoint-enforced
 
 ## SDLC Process
@@ -265,3 +282,16 @@ Fixed across all projects:
 - /hack detects current user via git config, picks their highest priority unblocked issue
 - "In-progress" label + comment when issue is picked up
 - Multi-laptop, multi-worktree safe: assignment = single owner, no conflicts
+
+## Workspace Pattern (Optional)
+
+Two checkouts of the same repo for parallel Claude Code sessions:
+- `<project>-manage` — Director: checkpoints, triage, slides, demo recording
+- `<project>-work` — Builder: `/hack` loop, worktrees, implementation
+
+Offered during init. Can be set up later with `/hackprep workspaces`.
+
+## Agent Attribution
+
+All tracking issue comments posted by Claude include `(via Claude agent)` suffix.
+API key conflicts between team members are flagged during team inventory.

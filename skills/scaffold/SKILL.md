@@ -194,6 +194,14 @@ Check off scaffold in the tracking issue and add a completion comment listing:
 - How to run locally (one-liner)
 - Link to smoke test results
 
+### Post-Scaffold Story Check
+
+After Feature Zero is committed and the scaffold is complete, print:
+
+> **You now have something that works end-to-end.** Before you build more: could you demo this to a judge and explain why it matters? If the story isn't clear yet, that's fine — but keep it in mind as you build. Every feature should serve the narrative.
+
+This is advisory only — do not block progress.
+
 ## Error Handling
 
 - If the project creation tool fails because the directory is not empty, use a temp directory and merge
