@@ -21,6 +21,10 @@ claude
 
 That's it. `/hackprep` auto-detects which phase you're on and runs the next one. Keep running it and the plugin walks you from rules to submission.
 
+## Solo or Team
+
+This works for solo hackers. But from personal experience: find a team. Even if you are socially awkward and your skin is crawling at the idea of raising your hand and saying you need a teammate. A hackathon is not just an opportunity to practice building fast on your own — it's a chance to practice developing a constructive collaborative rapport on the fly, under time pressure, and surprising yourself with everything you can learn from a random stranger. The plugin supports both modes, but the team features are where it shines.
+
 ## Only One Person Installs the Plugin
 
 One person on the team installs hackathoner and runs `/hackprep`. That creates a new **hackathon project repo** with project-specific skills, slash commands, and a CLAUDE.md — all committed under `.claude/`. Teammates just clone the project repo and open Claude Code. Everything they need is already there: `/hack` to pick up tasks, `/checkpoint` to check progress, routing rules that know who should work on what. No plugin install required — the project repo carries its own skills.
@@ -98,6 +102,19 @@ Built this plugin, then used it to compete. 190 commits in 23 hours. 31 design d
 a fully working system, and took notes on what the winning teams did differently.
 
 _Blog post coming soon at [cruxcapacity.com](https://cruxcapacity.com)._
+
+## Collaboration: What Works, What's Next
+
+**Battle-tested:** GitHub Issues and PRs. During our hackathon we lived in the tracking issue, assigned work through GitHub Issues, and reviewed each other's code through PRs. This is the plugin's backbone and it works well.
+
+**Experimental:** Discord setup. The plugin can create a disposable Discord server with channels and roles, but honestly we never touched it during the actual hackathon. The potential is there, especially for remote/virtual teams — automated status posts, checkpoint notifications, scope cut alerts piped into a channel — but nobody has built those integrations yet.
+
+**Wide open for contributions:**
+- **Messaging integrations** — Slack, Discord bots, GitHub Discussions, or anything that pipes checkpoint status and scope decisions to where the team actually communicates
+- **Alternative issue trackers** — Linear, Jira, Notion. The plugin assumes GitHub Issues today, but the methodology doesn't depend on it
+- **Coordination automation** — anything that reduces the friction of a remote team working under time pressure
+
+If you try this at a hackathon and build something for any of the above, please open an issue or PR. These are the gaps we know about but haven't had a chance to fill.
 
 ## Contributing
 
