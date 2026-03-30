@@ -23,7 +23,7 @@ That's it. `/hackprep` auto-detects which phase you're on and runs the next one.
 
 ## Only One Person Installs the Plugin
 
-The organizer installs hackathoner and runs `/hackprep`. That generates a repo with project-specific skills, slash commands, and a CLAUDE.md — all committed to the repo itself under `.claude/`. Teammates just clone the repo and open Claude Code. Everything they need is already there: `/hack` to pick up tasks, `/checkpoint` to check progress, routing rules that know who should work on what. No plugin install required.
+The organizer installs hackathoner and runs `/hackprep`. That creates a new **hackathon project repo** with project-specific skills, slash commands, and a CLAUDE.md — all committed under `.claude/`. Teammates just clone the project repo and open Claude Code. Everything they need is already there: `/hack` to pick up tasks, `/checkpoint` to check progress, routing rules that know who should work on what. No plugin install required — the project repo carries its own skills.
 
 ## Two Commands
 
