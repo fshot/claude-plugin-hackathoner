@@ -21,6 +21,10 @@ claude
 
 That's it. `/hackprep` auto-detects which phase you're on and runs the next one. Keep running it and the plugin walks you from rules to submission.
 
+## Only One Person Installs the Plugin
+
+The organizer installs hackathoner and runs `/hackprep`. That generates a repo with project-specific skills, slash commands, and a CLAUDE.md — all committed to the repo itself under `.claude/`. Teammates just clone the repo and open Claude Code. Everything they need is already there: `/hack` to pick up tasks, `/checkpoint` to check progress, routing rules that know who should work on what. No plugin install required.
+
 ## Two Commands
 
 **`/hackprep`** — the organizer runs this. It guides you through setup, research, brainstorming, scaffolding, and presentation prep. No arguments needed — it reads the tracking issue and picks up where you left off.
